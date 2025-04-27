@@ -1,0 +1,5 @@
+  .table-rounded {
+    border-radius: 10px;
+    overflow: hidden; /* Ensures corners are clipped properly */
+  }
+  
