@@ -32,7 +32,7 @@ export default function LoginComponent() {
       if (!res) {
         setMessage('Authentication failed.');
       } else {
-        router.replace('/(tabs)/Homepage');
+        router.replace('/Homepage');
       }
     } catch (err) {
       setMessage('Authentication failed.');

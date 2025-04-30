@@ -159,7 +159,7 @@ const RequestList = () => {
       <Text style={styles.cell}>{format(new Date(item.travelDate), 'dd/MM/yyyy')}</Text>     
       <Text style={styles.cell}>{item.requeststatus.label}</Text>
       <View style={[styles.cell, styles.actionsCell]}>
-        <TouchableOpacity onPress={() =>  router.push({ pathname: '/Request/RequestEdit', params: { id: item.id },})}>
+        <TouchableOpacity onPress={() =>  router.push({ pathname: '/Request/RequestEdit', params: { requestId: item.id },})}>
           <Text style={styles.link}>Edit</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => OnDelete(item.id)}>
@@ -180,7 +180,6 @@ const RequestList = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Requests List</Text>
       <View style={styles.buttonRow}>
         <Button title="Export PDF" onPress={exportApprovedRequestsPDF} />
         <Button title="Export Excel" onPress={downloadApprovedRequests} />

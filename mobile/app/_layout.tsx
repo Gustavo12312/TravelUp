@@ -35,24 +35,65 @@ export default function RootLayout() {
       <AuthProvider>
         <Drawer
           drawerContent={(props) => <CustomDrawerContent {...props} />}
-          screenOptions={{
-            headerShown: false,
+          screenOptions={{          
             drawerStyle: { backgroundColor: '#1e1e1e' },
             drawerLabelStyle: { color: '#fff' },
+            headerStyle: {
+              backgroundColor: '#25292e',
+            },
+            headerShadowVisible: false,
+            headerTintColor: '#fff',
           }}
         >
           <Drawer.Screen
-            name="(tabs)"
-            options={{ drawerItemStyle: { display: 'none' } }}
+            name="Homepage"
+            options={{ title: "Dashboard"}}
+          />
+          <Drawer.Screen
+            name="Request/RequestList"
+            options={{ title: "Requests"}}
+          />
+          <Drawer.Screen
+            name="Request/RequestEdit"
+            options={{ drawerItemStyle: { display: 'none' }, title: "Request Edit" }}
           />
           <Drawer.Screen
             name="login"
-            options={{ drawerItemStyle: { display: 'none' } }}
+            options={{ drawerItemStyle: { display: 'none' }, headerShown: false }}
           />
           <Drawer.Screen
             name="+not-found"
             options={{ drawerItemStyle: { display: 'none' } }}
           />
+           <Drawer.Screen
+            name="QuoteFlight/FlightAdd"
+            options={{ drawerItemStyle: { display: 'none' } }}
+          />
+           <Drawer.Screen
+            name="QuoteFlight/FlightEdit"
+            options={{ drawerItemStyle: { display: 'none' } }}
+          />
+           <Drawer.Screen
+            name="QuoteFlight/FlightList"
+            options={{ drawerItemStyle: { display: 'none' } }}
+          />
+           <Drawer.Screen
+            name="QuoteHotel/QuoteHotelAdd"
+            options={{ drawerItemStyle: { display: 'none' } }}
+          />
+           <Drawer.Screen
+            name="QuoteHotel/QuoteHotelList"
+            options={{ drawerItemStyle: { display: 'none' } }}
+          />
+           <Drawer.Screen
+            name="QuoteHotel/QuoteHotelEdit"
+            options={{ drawerItemStyle: { display: 'none' } }}
+          />
+          <Drawer.Screen
+            name="Detail/DetailEdit"
+            options={{ drawerItemStyle: { display: 'none' }, title: "Personal Detail" }}
+          />
+          
         </Drawer>
       
       <StatusBar style="light" />

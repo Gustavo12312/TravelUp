@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, FlatList } from 'react-native';
-import { getUserRole } from '../../utils/auth.utils';
-import RequestFacilitator from '../../components/FacilitatorRequest';
-import RequestTraveller from '../../components/TravellerRequest';
-import RequestManager from '../../components/ManagerRequest';
-import ManagerChart from '../../components/ManagerChart';
-import { useAuth } from '../../utils/auth.context';
+import { getUserRole } from '../utils/auth.utils';
+import RequestFacilitator from '../components/FacilitatorRequest';
+import RequestTraveller from '../components/TravellerRequest';
+import RequestManager from '../components/ManagerRequest';
+import ManagerChart from '../components/ManagerChart';
+import { useAuth } from '../utils/auth.context';
 
 const Homepage = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
