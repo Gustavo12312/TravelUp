@@ -82,7 +82,7 @@ export default function RequestFacilitator({ status, refreshTrigger, onRefresh }
       onPress={() =>
         router.push({
           pathname: '/Request/RequestEdit',
-          params: { id: item.id },
+          params: { requestId: item.id },
         })
       }
     >

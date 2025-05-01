@@ -60,7 +60,7 @@ export default function RequestTraveller({ status }: Props) {
     onPress={() =>
         router.push({
           pathname: '/Request/RequestEdit',
-          params: { id: item.id },
+          params: { requestId: item.id },
         })
       } 
       style={styles.itemContainer}

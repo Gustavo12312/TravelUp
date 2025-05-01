@@ -1,12 +1,14 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AuthService from '../utils/auth.service';
-import { getUserRole } from './auth.utils';
+import { getUserRole, getUserid } from './auth.utils';
 
 type AuthContextType = {
   login: (email: string, password: string) => Promise<any>;
   getRole: () => Promise<any>;
+  getUserId: () => Promise<any>;
   authChanged: number;
   role: number;
+  userId: number;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -18,6 +20,7 @@ type AuthProviderProps = {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authChanged, setAuthChanged] = useState(0);
   const [role, setrole] = useState(0);
+  const [userId, setuserid] = useState(0);
 
   const login = async (email: string, password: string) => {
     const res = await AuthService.login(email, password);
@@ -31,8 +34,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return res;
   };
 
+  const getUserId = async () => {
+    const res = await getUserid();
+    setuserid(res);
+    return res;
+  };
+
   return (
-    <AuthContext.Provider value={{ login, authChanged, getRole, role }}>
+    <AuthContext.Provider value={{ login, authChanged, getRole, role, getUserId, userId }}>
       {children}
     </AuthContext.Provider>
   );

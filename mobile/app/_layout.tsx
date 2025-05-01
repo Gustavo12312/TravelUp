@@ -57,6 +57,10 @@ export default function RootLayout() {
             name="Request/RequestEdit"
             options={{ drawerItemStyle: { display: 'none' }, title: "Request Edit" }}
           />
+           <Drawer.Screen
+            name="Request/RequestAdd"
+            options={{ drawerItemStyle: { display: 'none' }, title: "Request Create" }}
+          />
           <Drawer.Screen
             name="login"
             options={{ drawerItemStyle: { display: 'none' }, headerShown: false }}

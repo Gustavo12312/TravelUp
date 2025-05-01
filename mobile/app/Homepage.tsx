@@ -13,7 +13,7 @@ const Homepage = () => {
 
   useEffect(() => {
     const fetchRole = async () => {
-      const res = await getRole();
+      await getRole();
     };
     fetchRole();
   }, [authChanged]);

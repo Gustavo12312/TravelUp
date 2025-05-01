@@ -183,7 +183,7 @@ const RequestList = () => {
       <View style={styles.buttonRow}>
         <Button title="Export PDF" onPress={exportApprovedRequestsPDF} />
         <Button title="Export Excel" onPress={downloadApprovedRequests} />
-        <Button title="Add Request" onPress={() => router.push('/Request/RequestCreate')} />
+        <Button title="Add Request" onPress={() => router.push('/Request/RequestAdd')} />
       </View>
       <FlatList
         data={dataRequest}

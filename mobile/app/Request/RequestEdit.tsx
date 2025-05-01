@@ -9,6 +9,8 @@ import JustificationAdd from '@/components/JustificationAdd';
 import QuoteList from '@/components/QuoteList';
 import QuoteAdd from '@/components/QuoteAdd';
 import { url } from '@/components/Host';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 const baseUrl = url;
 
@@ -52,13 +54,15 @@ const RequestEdit = () => {
   const router = useRouter();
   const { role, getRole } = useAuth();
 
-  useEffect(() => {
-    const fetchRole = async () => {
-      await getRole();
-    };
-    fetchRole();
-    fetchData();
-  }, [requestId]);
+  useFocusEffect(
+    useCallback(() => {
+      const fetchDataOnFocus = async () => {
+        await getRole();
+        await fetchData();
+      };
+      fetchDataOnFocus();
+    }, [requestId])
+  );
 
   const fetchData = async () => {
     const headers = await authHeader();
