@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
 import axios from "axios";
 import { format } from "date-fns";
 import authHeader from "../../utils/auth.header";
 import FlightAdd from "./FlightAdd";
 import FlightEdit from "./FlightEdit";
 import { url } from "@/components/Host";
+import Toast from "react-native-toast-message";
 
 const baseUrl = url;
 
@@ -37,26 +38,28 @@ const FlightList: React.FC<FlightListProps> = ({ quoteId, disable, onTotalChange
       if (res.data.success) {
         setDataFlight(res.data.data);
       } else {
-        Alert.alert("Error", "Error Web Service");
+        Toast.show({
+          type: "error",
+          text1: "Error loading flights",
+          text2: "Web service returned an error",
+        });
       }
     } catch (err) {
-      Alert.alert("Error", "Failed to load flights");
+      Toast.show({
+        type: "error",
+        text1: "Load Failed",
+        text2: "Could not fetch flight data",
+      });
     }
   };
 
   const OnDelete = (id: number) => {
-    Alert.alert(
-      "Are you sure?",
-      "You will not be able to recover this flight!",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Yes, delete it!",
-          style: "destructive",
-          onPress: () => SendDelete(id),
-        },
-      ]
-    );
+    Toast.show({
+      type: "info",
+      text1: "Deleting...",
+      text2: "Please wait while we delete the flight",
+    });
+    SendDelete(id);
   };
 
   const SendDelete = async (id: number) => {
@@ -65,11 +68,25 @@ const FlightList: React.FC<FlightListProps> = ({ quoteId, disable, onTotalChange
         headers: await authHeader(),
       });
       if (res.data.success) {
-        Alert.alert("Deleted", "Flight has been deleted.");
+        Toast.show({
+          type: "success",
+          text1: "Flight Deleted",
+          text2: "The flight was successfully removed",
+        });
         LoadFlight();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Delete Failed",
+          text2: res.data.message || "Could not delete flight",
+        });
       }
     } catch {
-      Alert.alert("Error", "Error deleting flight");
+      Toast.show({
+        type: "error",
+        text1: "Network Error",
+        text2: "Unable to delete flight",
+      });
     }
   };
 

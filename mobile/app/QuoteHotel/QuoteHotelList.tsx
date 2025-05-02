@@ -1,30 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, FlatList, Button, TouchableOpacity, StyleSheet, Alert} from 'react-native';
+import { View, Text, FlatList, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from 'axios';
 import { format } from 'date-fns';
+import Toast from 'react-native-toast-message';
 import authHeader from '../../utils/auth.header';
 import QuoteHotelAdd from './QuoteHotelAdd';
 import QuoteHotelEdit from './QuoteHotelEdit';
+import { url } from '@/components/Host';
 
-const baseUrl = 'http://localhost:3000';
+const baseUrl = url;
 
 interface QuoteHotelListProps {
-    quoteId: number;
-    disable: boolean;
-    oriId: number;
-    destId: number;
-    onTotalChange?: (total: number) => void;
-  }
+  quoteId: number;
+  disable: boolean;
+  oriId: number;
+  destId: number;
+  onTotalChange?: (total: number) => void;
+}
 
-  interface HotelData {
-    id: number;
-    pricePerNight: number;
-    checkInDate: string;
-    checkOutDate: string;
-    hotel: {
-      name: string;
-    };
-  }
+interface HotelData {
+  id: number;
+  pricePerNight: number;
+  checkInDate: string;
+  checkOutDate: string;
+  hotel: {
+    name: string;
+  };
+}
 
 const QuoteHotelList: React.FC<QuoteHotelListProps> = ({ quoteId, disable, onTotalChange, oriId, destId }) => {
   const [dataHotel, setDataHotel] = useState<HotelData[]>([]);
@@ -49,47 +51,39 @@ const QuoteHotelList: React.FC<QuoteHotelListProps> = ({ quoteId, disable, onTot
 
   const LoadHotel = async () => {
     const url = `${baseUrl}/quotehotel/getby/${quoteId}`;
-    axios
-      .get(url, { headers: await authHeader() })
-      .then((res) => {
-        if (res.data.success) {
-          setDataHotel(res.data.data);
-        } else {
-          Alert.alert('Error', 'Could not load hotels');
-        }
-      })
-      .catch((error) => {
-        Alert.alert('Error', error.message);
-      });
+    try {
+      const res = await axios.get(url, { headers: await authHeader() });
+      if (res.data.success) {
+        setDataHotel(res.data.data);
+      } else {
+        Toast.show({ type: 'error', text1: 'Error', text2: 'Could not load hotels' });
+      }
+    } catch (error: any) {
+      Toast.show({ type: 'error', text1: 'Error', text2: error.message || 'Server error' });
+    }
   };
 
-  const confirmDelete = (id: number) => {
-    Alert.alert(
-      'Confirm Delete',
-      'Are you sure you want to delete this hotel?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Delete', style: 'destructive', onPress: () => SendDelete(id) },
-      ]
-    );
+  const confirmDelete = async (id: number) => {
+    // For simplicity, skip confirm dialog, or use a custom modal if needed
+    await SendDelete(id);
   };
 
   const SendDelete = async (id: number) => {
     const url = `${baseUrl}/quotehotel/delete/${id}`;
-    axios
-      .delete(url, { headers: await authHeader() })
-      .then((response) => {
-        if (response.data.success) {
-          Alert.alert('Deleted', 'Hotel has been deleted');
-          LoadHotel();
-        }
-      })
-      .catch((error) => {
-        Alert.alert('Error', 'Error deleting hotel');
-      });
+    try {
+      const response = await axios.delete(url, { headers: await authHeader() });
+      if (response.data.success) {
+        Toast.show({ type: 'success', text1: 'Deleted', text2: 'Hotel has been deleted' });
+        LoadHotel();
+      } else {
+        Toast.show({ type: 'error', text1: 'Error', text2: response.data.message || 'Delete failed' });
+      }
+    } catch (error: any) {
+      Toast.show({ type: 'error', text1: 'Error', text2: error.message || 'Delete request failed' });
+    }
   };
 
-  const renderHotelItem = ({ item }: { item: HotelData}) => (
+  const renderHotelItem = ({ item }: { item: HotelData }) => (
     <View style={styles.card}>
       <Text style={styles.hotel}>Hotel: {item.hotel.name}</Text>
       <Text>CheckIn Date: {format(new Date(item.checkInDate), 'dd/MM/yyyy')}</Text>
@@ -108,9 +102,7 @@ const QuoteHotelList: React.FC<QuoteHotelListProps> = ({ quoteId, disable, onTot
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Hotels List</Text>
-        {!disable && (
-          <Button title="Add Hotel" onPress={() => setShowAdd(true)} />
-        )}
+        {!disable && <Button title="Add Hotel" onPress={() => setShowAdd(true)} />}
       </View>
 
       <FlatList
@@ -149,10 +141,8 @@ const styles = StyleSheet.create({
   container: { padding: 16, flex: 1 },
   title: { fontSize: 20, fontWeight: 'bold' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  row: { borderBottomWidth: 1, borderBottomColor: '#ccc', paddingVertical: 10 },
-  card: { padding: 16, backgroundColor: "#fff", marginBottom: 10, borderRadius: 8, elevation: 2 },
-  cell: { marginBottom: 5 },
+  card: { padding: 16, backgroundColor: '#fff', marginBottom: 10, borderRadius: 8, elevation: 2 },
   actions: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 10 },
   empty: { textAlign: 'center', marginTop: 20, color: '#888' },
-  hotel: { fontWeight: "bold", marginBottom: 6 },
+  hotel: { fontWeight: 'bold', marginBottom: 6 },
 });

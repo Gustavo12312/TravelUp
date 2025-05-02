@@ -1,32 +1,34 @@
 import React, { useEffect, useState } from "react";
-import { Modal, View, Text, TextInput, Button, StyleSheet, Alert, ScrollView } from "react-native";
+import { Modal, View, Text, TextInput, Button, StyleSheet, ScrollView } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
+import Toast from 'react-native-toast-message';
 import authHeader from "../../utils/auth.header";
+import { url } from "@/components/Host";
 
-const baseUrl = "http://localhost:3000"; // Update for production use
+const baseUrl = url;
 
 interface QuoteHotelEditProps {
-    show: boolean;
-    handleClose: () => void;
-    quotehotelId: number;
-    onRefresh: () => void;
-    destId: number;
-  }
+  show: boolean;
+  handleClose: () => void;
+  quotehotelId: number;
+  onRefresh: () => void;
+  destId: number;
+}
 
-  interface Hotel {
-    id: number;
-    name: string;
-    cityId: number;
-  }
-  
-  interface QuoteHotel {
-    hotelId: number;
-    checkInDate: string;
-    checkOutDate: string;
-    pricePerNight: number;
-  }
+interface Hotel {
+  id: number;
+  name: string;
+  cityId: number;
+}
+
+interface QuoteHotel {
+  hotelId: number;
+  checkInDate: string;
+  checkOutDate: string;
+  pricePerNight: number;
+}
 
 const QuoteHotelEdit: React.FC<QuoteHotelEditProps> = ({ show, handleClose, quotehotelId, onRefresh, destId }) => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
@@ -34,7 +36,7 @@ const QuoteHotelEdit: React.FC<QuoteHotelEditProps> = ({ show, handleClose, quot
   const { control, handleSubmit, setValue, formState: { errors } } = useForm<QuoteHotel>();
 
   useEffect(() => {
-      loadHotel();
+    loadHotel();
   }, [quotehotelId]);
 
   useEffect(() => {
@@ -50,42 +52,36 @@ const QuoteHotelEdit: React.FC<QuoteHotelEditProps> = ({ show, handleClose, quot
     const quoteUrl = `${baseUrl}/quotehotel/get/${quotehotelId}`;
     const hotelUrl = `${baseUrl}/hotel/get/city/${destId}`;
 
-    Promise.all([
-      axios.get(quoteUrl, { headers: await authHeader() }),
-      axios.get(hotelUrl, { headers: await authHeader() })
-    ])
-      .then(([quoteRes, hotelRes]) => {
-        setFormHotel(quoteRes.data.data);
-        setHotels(hotelRes.data.data || []);
-      })
-      .catch((error) => {
-        Alert.alert("Error", "Server error: " + error.message);
-      });
+    try {
+      const [quoteRes, hotelRes] = await Promise.all([
+        axios.get(quoteUrl, { headers: await authHeader() }),
+        axios.get(hotelUrl, { headers: await authHeader() }),
+      ]);
+
+      setFormHotel(quoteRes.data.data);
+      setHotels(hotelRes.data.data || []);
+    } catch (error: any) {
+      Toast.show({ type: "error", text1: "Error", text2: error.message || "Failed to load data." });
+    }
   };
 
   const onSubmit = async (data: QuoteHotel) => {
     const url = `${baseUrl}/quotehotel/update/${quotehotelId}`;
-    const payload = {
-      hotelId: data.hotelId,
-      checkInDate: data.checkInDate,
-      checkOutDate: data.checkOutDate,
-      pricePerNight: data.pricePerNight,
-    };
+    const payload = { ...data };
 
-    axios
-      .put(url, payload, { headers: await authHeader() })
-      .then((response) => {
-        if (response.data.success) {
-          Alert.alert("Success", response.data.message);
-          handleClose();
-          onRefresh();
-        } else {
-          Alert.alert("Error", response.data.message || "Update failed");
-        }
-      })
-      .catch((error) => {
-        Alert.alert("Error", error.message || "Request failed");
-      });
+    try {
+      const response = await axios.put(url, payload, { headers: await authHeader() });
+
+      if (response.data.success) {
+        Toast.show({ type: "success", text1: "Success", text2: response.data.message });
+        handleClose();
+        onRefresh();
+      } else {
+        Toast.show({ type: "error", text1: "Error", text2: response.data.message || "Update failed" });
+      }
+    } catch (error: any) {
+      Toast.show({ type: "error", text1: "Error", text2: error.message || "Request failed" });
+    }
   };
 
   return (
@@ -178,6 +174,7 @@ const QuoteHotelEdit: React.FC<QuoteHotelEditProps> = ({ show, handleClose, quot
 };
 
 export default QuoteHotelEdit;
+
 
 const styles = StyleSheet.create({
   modalOverlay: {

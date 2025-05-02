@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, Alert, ScrollView, Switch, StyleSheet } from 'react-native';
+import { View, Text, TextInput, Button, Alert, ScrollView, Switch, StyleSheet, FlatList } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -7,6 +7,7 @@ import authHeader from '../../utils/auth.header';
 import { useAuth } from '@/utils/auth.context';
 import { router } from 'expo-router';
 import { url } from '@/components/Host';
+import Toast from 'react-native-toast-message';
 
 const baseUrl = url ;
 
@@ -79,19 +80,36 @@ const RequestAdd = () => {
         checkInDate: isHotelNeeded ? checkInDate : null,
         checkOutDate: isHotelNeeded ? checkOutDate : null,
       };
-
-      axios.post(baseUrl + "/request/create", payload, { headers: await authHeader() })
-        .then((response) => {
-          if (response.data.success) {
-            Alert.alert("Success", response.data.message);
-            router.push("/Request/RequestList");
-          } else {
-            Alert.alert("Error", response.data.message || "Submission failed");
-          }
-        })
-        .catch((error) => Alert.alert("Error", error.message));
+  
+      try {
+        const response = await axios.post(baseUrl + "/request/create", payload, {
+          headers: await authHeader(),
+        });
+  
+        if (response.data.success) {
+          Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: response.data.message || 'Request submitted successfully',
+          });
+          router.push("/Request/RequestList");
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: response.data.message || 'Submission failed',
+          });
+        }
+      } catch (error: any) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: error.message || 'Something went wrong',
+        });
+      }
     }
   };
+  
 
   type FormErrors = {
     code?: string;
@@ -122,12 +140,15 @@ const RequestAdd = () => {
 
 
 return (
-  <ScrollView style={styles.container}>
-    <Text style={styles.title}>Add Request</Text>
-
+  <FlatList
+  data={[]}
+  renderItem={() => null}
+  ListHeaderComponent={
+    <>
+    <View style={styles.container}>
     <View style={styles.inputGroup}>
       <Text style={styles.label}>Code</Text>
-      <TextInput style={[styles.input, errors.code && styles.errorInput]} value={code} onChangeText={setCode} />
+      <TextInput style={[styles.input, errors.code && styles.errorInput]} value={code} onChangeText={setCode} placeholder='Code...' />
       {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
     </View>
 
@@ -149,6 +170,7 @@ return (
         style={styles.input}
         value={description}
         onChangeText={setDescription}
+        placeholder='Description...'
       />
     </View>
 
@@ -238,7 +260,11 @@ return (
       <Button title="Save Draft" color="#17a2b8" onPress={() => handleSubmit(3)} />
       <Button title="Submit" color="#28a745" onPress={() => handleSubmit(4)} />
     </View>
-  </ScrollView>
+  </View>
+    </>
+  }
+/>
+  
     );
 };
 export default RequestAdd;
@@ -248,7 +274,7 @@ const styles = StyleSheet.create({
     title: { fontSize: 24, fontWeight: 'bold', color: '#fff', marginBottom: 20 },
     inputGroup: { marginBottom: 15 },
     label: { color: '#fff', marginBottom: 5 },
-    input: { backgroundColor: '#fff', padding: 10, borderRadius: 5 },
+    input: { backgroundColor: '#000', color: '#fff', padding: 10, borderRadius: 5 },
     errorInput: { borderColor: 'red', borderWidth: 1 },
     errorText: { color: 'red', fontSize: 12 },
     switchGroup: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },

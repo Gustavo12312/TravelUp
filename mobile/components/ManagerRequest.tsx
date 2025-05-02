@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, Alert, Modal, Button, FlatList, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { format } from "date-fns";
 import axios from "axios";
 import authHeader from "../utils/auth.header";
-import { useAuthentication } from "../utils/auth.utils";
 import JustificationAdd from "./JustificationAdd";
-import { useRouter } from 'expo-router';
 import { url } from "./Host";
+import Toast from "react-native-toast-message";
 
 const baseUrl = url;
 
@@ -26,12 +25,13 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
             .then(res => {
                 if (res.data.success) {
                     setDataRequest(res.data.data);
-                } else {
-                    alert("Error fetching requests");
+                } else {                    
+                    Toast.show({type: "error", text1: "Error", text2: "Error fetching requests"});
                 }
             })
-            .catch(error => {
-                alert(error);
+            .catch(error => {                
+                Toast.show({type: "error", text1: "Error", text2: error});
+                
             });
     }
 
@@ -87,14 +87,15 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
         axios.put(requesturl, data, { headers})
             .then((res) => {
                 if (res.data.success === true) {
-                    Alert.alert(res.data.message);
+                    Toast.show({type: "success", text1: "Sucess", text2: res.data.message});                    
                     onRefresh();
-                } else {
-                    Alert.alert("Error updating request");
+                } else {                
+                    Toast.show({type: "error", text1: "Error", text2: "Error updating request"});
                 }
             })
-            .catch((error) => {
-                Alert.alert("Error: " + error);
+            .catch((error) => {               
+                Toast.show({type: "error", text1: "Error", text2: "Error: " + error});
+                
             });
     };
 
@@ -108,14 +109,14 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
         axios.put(projecturl, data, { headers })
             .then((res) => {
                 if (res.data.success === true) {
-                    Alert.alert(res.data.message);
+                    Toast.show({type: "success", text1: "Success", text2: res.data.message});                    
                     onRefresh();
-                } else {
-                    Alert.alert("Error updating project");
+                } else {                    
+                    Toast.show({type: "error", text1: "Error", text2: "Error updating project"});
                 }
             })
-            .catch((error) => {
-                Alert.alert("Error: " + error);
+            .catch((error) => {                
+                Toast.show({type: "error", text1: "Error", text2: "Error: " + error});
             });
     };
 

@@ -6,6 +6,7 @@ import axios from "axios";
 import { Picker } from "@react-native-picker/picker";
 import authHeader from "../../utils/auth.header";
 import { url } from "@/components/Host";
+import Toast from "react-native-toast-message";
 
 
 const baseUrl = url;
@@ -86,7 +87,11 @@ const FlightEdit: React.FC<FlightEditProps> = ({ show, handleClose, flightId, on
         setDestAirports(destRes.data.data);
         setAllAirports(allRes.data.data);
       })
-      .catch(err => Alert.alert("Error", "Could not load flight info"));
+      .catch(err => Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Could not load flight info",
+              }));
   };
 
   const onSubmit = async (data: Flight) => {
@@ -102,17 +107,32 @@ const FlightEdit: React.FC<FlightEditProps> = ({ show, handleClose, flightId, on
     };
 
     axios
-      .put(`${baseUrl}/flight/update/${flightId}`, payload, { headers: await authHeader() })
-      .then(res => {
-        if (res.data.success) {
-          Alert.alert("Success", res.data.message);
-          handleClose();
-          onRefresh();
-        } else {
-          Alert.alert("Error", res.data.message || "Flight update failed.");
-        }
-      })
-      .catch(() => Alert.alert("Error", "Request failed"));
+  .put(`${baseUrl}/flight/update/${flightId}`, payload, { headers: await authHeader() })
+  .then(res => {
+    if (res.data.success) {
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: res.data.message,
+      });
+      handleClose();
+      onRefresh();
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: res.data.message || 'Flight update failed.',
+      });
+    }
+  })
+  .catch(() => {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: 'Request failed',
+    });
+  });
+
   };
 
   const filteredAirports = (type: "departure" | "arrival"): Airport[] => {

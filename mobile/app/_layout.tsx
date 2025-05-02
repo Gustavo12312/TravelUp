@@ -3,8 +3,9 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import CustomDrawerContent from '../components/CustomDrawer';
-import { isAuth } from '../utils/auth.utils'; // Your async auth check
+import { isAuth } from '../utils/auth.utils';
 import { AuthProvider, useAuth } from '../utils/auth.context'; 
+import Toast from 'react-native-toast-message';
 
 export default function RootLayout() {
   const [isReady, setIsReady] = useState(false);
@@ -22,12 +23,12 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (isReady && !authenticated) {
-      router.replace('/login'); // Only navigate after layout is mounted and auth checked
+      router.replace('/login');
     }
   }, [isReady, authenticated]);
 
   if (!isReady) {
-    return null; // Optionally render a loading spinner here
+    return null; 
   }
 
   return (
@@ -99,7 +100,7 @@ export default function RootLayout() {
           />
           
         </Drawer>
-      
+        <Toast />
       <StatusBar style="light" />
       </AuthProvider>
     </>

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Alert, Button, StyleSheet } from 'react-native';
+import { View, Text, Button, StyleSheet } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import authHeader from '../utils/auth.header';
 import { url } from './Host';
+import Toast from 'react-native-toast-message';
 
 const baseUrl = url;
 
@@ -35,7 +36,7 @@ const QuoteAdd = ({ onRefresh }: { onRefresh: () => void }) => {
       setAgencies(response.data.data);
     } catch (error) {
       console.error('Error fetching agencies:', error);
-      Alert.alert('Error', 'Error fetching agencies.');
+      Toast.show({type: "error", text1: "Error", text2: 'Error fetching agencies.'});
     }
   };
 
@@ -52,16 +53,16 @@ const QuoteAdd = ({ onRefresh }: { onRefresh: () => void }) => {
 
       const response = await axios.post(`${baseUrl}/quote/create`, quoteData, { headers: await authHeader() });
 
-      if (response.data.success) {
-        Alert.alert('Success', 'Quote created successfully!');
+      if (response.data.success) {  
+        Toast.show({type: "success", text1: "Success", text2: 'Quote created successfully!'});
         if (onRefresh) onRefresh();
         router.back();
-      } else {
-        Alert.alert('Error', response.data.message || 'Error creating quote.');
+      } else {        
+        Toast.show({type: "error", text1: "Error", text2: response.data.message || 'Error creating quote.'});
       }
     } catch (error) {
-      console.error('Error creating quote:', error);
-      Alert.alert('Error', 'Error creating quote.');
+      console.error('Error creating quote:', error);  
+      Toast.show({type: "error", text1: "Error", text2: 'Error creating quote.'});
     }
   };
 

@@ -1,0 +1,16 @@
+<Dropdown
+  style={styles.dropdown}
+  containerStyle={styles.dropdownContainer}
+  placeholderStyle={styles.placeholder}
+  selectedTextStyle={styles.selectedText}
+  itemTextStyle={styles.itemText}
+  data={Projects.map(project => ({
+    label: project.name,
+    value: project.id,
+  }))}
+  labelField="label"
+  valueField="value"
+  placeholder="Select project"
+  value={projectId}
+  onChange={item => setProjectId(item.value)}
+/>

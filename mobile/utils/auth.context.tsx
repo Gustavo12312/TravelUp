@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AuthService from '../utils/auth.service';
 import { getUserRole, getUserid } from './auth.utils';
+import Toast from 'react-native-toast-message';
 
 type AuthContextType = {
   login: (email: string, password: string) => Promise<any>;

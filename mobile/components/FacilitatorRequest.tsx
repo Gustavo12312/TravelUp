@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { format } from "date-fns";
 import { useRouter } from 'expo-router';
 import authHeader from "../utils/auth.header";
-import { useAuthentication, getUserid } from "../utils/auth.utils";
 import { url } from "./Host";
+import Toast from "react-native-toast-message";
 
 const baseUrl = url;
 
@@ -48,11 +48,12 @@ export default function RequestFacilitator({ status, refreshTrigger, onRefresh }
         if (res.data.success) {
           setDataRequest(res.data.data);
         } else {
-          Alert.alert("Error", "Web service error");
+          Toast.show({type: "error", text1: "Error", text2: "Error Web Service"});
+          
         }
       })
       .catch((error) => {
-        Alert.alert("Error", error.message);
+         Toast.show({type: "error", text1: "Error", text2: error.message});
       });
   };
 
@@ -64,15 +65,15 @@ export default function RequestFacilitator({ status, refreshTrigger, onRefresh }
     axios
       .put(url, datapost, { headers })
       .then((res) => {
-        if (res.data.success) {
-          Alert.alert("Success", res.data.message);
+        if (res.data.success) {    
+           Toast.show({type: "success", text1: "Sucess", text2: res.data.message});
           onRefresh();
-        } else {
-          Alert.alert("Error", res.data.message || "Update failed");
+        } else {      
+          Toast.show({type: "error", text1: "Error", text2: res.data.message|| "Update failed"});
         }
       })
-      .catch((error) => {
-        Alert.alert("Error", error.message);
+      .catch((error) => {        
+        Toast.show({type: "error", text1: "Error", text2: error.message});
       });
   };
 

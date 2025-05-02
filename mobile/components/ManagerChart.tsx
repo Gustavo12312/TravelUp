@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Alert, Dimensions, StyleSheet, ScrollView } from "react-native";
+import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
 import axios from "axios";
 import { BarChart } from "react-native-chart-kit";
 import { url } from "./Host";
+import Toast from "react-native-toast-message";
 
 const baseUrl = url;
 
@@ -27,12 +28,12 @@ const [dataProject, setDataProject] = useState<Project[]>([]);
       .then((res) => {
         if (res.data.success) {
           setDataProject(res.data.data);
-        } else {
-          Alert.alert("Error", "Error fetching data");
+        } else {          
+          Toast.show({type: "error", text1: "Error", text2: "Error fetching data"});     
         }
       })
-      .catch((error) => {
-        Alert.alert("Error", error.message);
+      .catch((error) => {  
+         Toast.show({type: "error", text1: "Error", text2: error.message});     
       });
   };
 

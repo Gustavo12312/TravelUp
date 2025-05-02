@@ -4,6 +4,7 @@ import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import axios from "axios";
 import { url } from "@/components/Host";
+import Toast from "react-native-toast-message";
 
 const baseUrl = url;
 
@@ -64,14 +65,26 @@ const FlightAdd: React.FC<FlightAddProps> = ({ show, handleClose, quoteId, onRef
         ...form,
       });
       if (response.data.success) {
-        Alert.alert("Success", response.data.message);
+              Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: response.data.message,
+              });
         handleClose();
         onRefresh();
       } else {
-        Alert.alert("Error", response.data.message || "Error creating flight");
-      }
+              Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: response.data.message || 'Error updating details',
+              });
+            }
     } catch (err) {
-      Alert.alert("Error", "Could not submit form");
+      Toast.show({
+              type: 'error',
+              text1: 'Error',
+              text2:"Could not submit form",
+            });
     }
   };
 

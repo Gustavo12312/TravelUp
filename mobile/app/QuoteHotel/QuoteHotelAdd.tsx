@@ -1,37 +1,38 @@
 import React, { useEffect, useState } from "react";
 import { Picker } from "@react-native-picker/picker";
-import {View, Text, TextInput, Button, Modal, Alert, StyleSheet, ScrollView} from "react-native";
+import { View, Text, TextInput, Button, Modal, StyleSheet, ScrollView } from "react-native";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import authHeader from "../../utils/auth.header";
 import { url } from "@/components/Host";
+import Toast from "react-native-toast-message";
 
 const baseUrl = url; 
 
 interface QuoteHotelAddProps {
-    show: boolean;
-    handleClose: () => void;
-    quoteId: number;
-    onRefresh: () => void;
-    destId: number;
-  }
+  show: boolean;
+  handleClose: () => void;
+  quoteId: number;
+  onRefresh: () => void;
+  destId: number;
+}
 
-  interface Hotel {
-    id: number;
-    name: string;
-    cityId: number;
-  }
-  
-  interface QuoteHotel {
-    hotelId: number;
-    checkInDate: string;
-    checkOutDate: string;
-    pricePerNight: number;
-  }
+interface Hotel {
+  id: number;
+  name: string;
+  cityId: number;
+}
+
+interface QuoteHotel {
+  hotelId: number;
+  checkInDate: string;
+  checkOutDate: string;
+  pricePerNight: number;
+}
 
 const QuoteHotelAdd: React.FC<QuoteHotelAddProps> = ({ show, handleClose, quoteId, onRefresh, destId }) => {
   const [hotels, setHotels] = useState<Hotel[]>([]);
-  const { control, handleSubmit, reset, formState: { errors }, } = useForm<QuoteHotel>();
+  const { control, handleSubmit, reset, formState: { errors } } = useForm<QuoteHotel>();
 
   useEffect(() => {
     loadHotel();
@@ -42,12 +43,18 @@ const QuoteHotelAdd: React.FC<QuoteHotelAddProps> = ({ show, handleClose, quoteI
   }, [show]);
 
   const loadHotel = async () => {
-    axios
-      .get(`${baseUrl}/hotel/get/city/${destId}`, {
+    try {
+      const res = await axios.get(`${baseUrl}/hotel/get/city/${destId}`, {
         headers: await authHeader(),
-      })
-      .then((res) => setHotels(res.data.data || []))
-      .catch((error) => console.error("Error fetching hotels:", error));
+      });
+      setHotels(res.data.data || []);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Hotel Load Failed",
+        text2: "Could not fetch hotel list",
+      });
+    }
   };
 
   const onSubmit = async (data: QuoteHotel) => {
@@ -59,20 +66,33 @@ const QuoteHotelAdd: React.FC<QuoteHotelAddProps> = ({ show, handleClose, quoteI
       pricePerNight: data.pricePerNight,
     };
 
-    axios
-      .post(`${baseUrl}/quotehotel/create`, payload, { headers: await authHeader() })
-      .then((res) => {
-        if (res.data.success) {
-          Alert.alert("Success", res.data.message);
-          handleClose();
-          onRefresh();
-        } else {
-          Alert.alert("Error", res.data.message || "Error creating hotel");
-        }
-      })
-      .catch((error) => {
-        Alert.alert("Error", error.message || "Request failed");
+    try {
+      const res = await axios.post(`${baseUrl}/quotehotel/create`, payload, {
+        headers: await authHeader(),
       });
+
+      if (res.data.success) {
+        Toast.show({
+          type: "success",
+          text1: "Hotel Added",
+          text2: res.data.message || "Hotel successfully added",
+        });
+        handleClose();
+        onRefresh();
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: res.data.message || "Error creating hotel",
+        });
+      }
+    } catch (error: any) {
+      Toast.show({
+        type: "error",
+        text1: "Request Failed",
+        text2: error.message || "Could not create hotel",
+      });
+    }
   };
 
   return (

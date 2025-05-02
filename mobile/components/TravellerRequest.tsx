@@ -4,9 +4,10 @@ import axios from "axios";
 import { format } from "date-fns";
 import { useRouter } from 'expo-router';
 import authHeader from "../utils/auth.header";
-import { useAuthentication, getUserid } from "../utils/auth.utils";
+import { getUserid } from "../utils/auth.utils";
 import { url } from "./Host";
 import { useAuth } from '../utils/auth.context';
+import Toast from "react-native-toast-message";
 
 const baseUrl = url;
 
@@ -46,12 +47,12 @@ export default function RequestTraveller({ status }: Props) {
       .then((res) => {
         if (res.data.success) {
           setDataRequest(res.data.data);
-        } else {
-          Alert.alert("Error", "Error fetching request data.");
+        } else {         
+          Toast.show({type: "error", text1: "Error", text2: "Error fetching request data."})
         }
       })
-      .catch((error) => {
-        Alert.alert("Error", error.message);
+      .catch((error) => {       
+        Toast.show({type: "error", text1: "Error", text2: error.message})
       });
   };
 

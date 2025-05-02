@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch, FlatList } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -11,6 +11,7 @@ import QuoteAdd from '@/components/QuoteAdd';
 import { url } from '@/components/Host';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
+import Toast from 'react-native-toast-message';
 
 const baseUrl = url;
 
@@ -91,8 +92,13 @@ const RequestEdit = () => {
         setJustification(data.justification);
       })
       .catch((error) => {
-        Alert.alert('Error', 'Server Error: ' + error.message);
+        Toast.show({
+          type: 'error',
+          text1: 'Server Error',
+          text2: error.message
+        });
       });
+      
   };
 
   useEffect(() => {
@@ -136,33 +142,59 @@ const RequestEdit = () => {
       checkInDate,
       checkOutDate,
     }, { headers })
-      .then((res) => {
-        if (res.data.success) {
-          Alert.alert('Success', res.data.message);
-          router.back();
-        } else {
-          Alert.alert('Error', res.data.message);
-        }
-      })
-      .catch((error) => {
-        Alert.alert('Error', error.message);
+    .then((res) => {
+      if (res.data.success) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: res.data.message
+        });
+        router.back();
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: res.data.message
+        });
+      }
+    })
+    .catch((error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.message
       });
+    });
+    
   };
 
   const sendUpdateRequest = async (newStatusId: number) => {
     const headers = await authHeader();
     axios.put(`${baseUrl}/request/update/${requestIdNumber}`, { requestStatusId: newStatusId }, { headers })
-      .then((res) => {
-        if (res.data.success) {
-          Alert.alert('Success', res.data.message);
-          router.back();
-        } else {
-          Alert.alert('Error', res.data.message);
-        }
-      })
-      .catch((error) => {
-        Alert.alert('Error', error.message);
+    .then((res) => {
+      if (res.data.success) {
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: res.data.message
+        });
+        router.back();
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: res.data.message
+        });
+      }
+    })
+    .catch((error) => {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.message
       });
+    });
+    
   };
 
   type FormErrors = {
@@ -199,196 +231,203 @@ const RequestEdit = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backButtonText}>{'< Back'}</Text>
-      </TouchableOpacity>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Code</Text>
-        <TextInput
-          style={[styles.input, errors.code && styles.errorInput]}
-          value={code}
-          editable={isEditMode}
-          onChangeText={setCode}
-          placeholder="Enter Code"
-        />
-        {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Project</Text>
-        <Picker
-          selectedValue={projectId}
-          onValueChange={setProjectId}
-          enabled={isEditMode}
-          style={styles.input}
-        >
-          <Picker.Item label="Choose..." value="" />
-          {Projects.map(project => (
-            <Picker.Item key={project.id} label={project.name} value={project.id} />
-          ))}
-        </Picker>
-        {errors.projectId && <Text style={styles.errorText}>{errors.projectId}</Text>}
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Description</Text>
-        <TextInput
-          style={styles.input}
-          value={description}
-          editable={isEditMode}
-          onChangeText={setDescription}
-          placeholder="Enter Description"
-          multiline
-        />
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Origin City</Text>
-        <Picker
-          selectedValue={originCityId}
-          onValueChange={setOriginCityId}
-          enabled={isEditMode}
-          style={styles.input}
-        >
-          <Picker.Item label="Choose..." value="" />
-          {Cities.map(city => (
-            <Picker.Item key={city.id} label={city.name} value={city.id} />
-          ))}
-        </Picker>
-        {errors.originCityId && <Text style={styles.errorText}>{errors.originCityId}</Text>}
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Destination City</Text>
-        <Picker
-          selectedValue={destinationCityId}
-          onValueChange={setDestinationCityId}
-          enabled={isEditMode}
-          style={styles.input}
-        >
-          <Picker.Item label="Choose..." value="" />
-          {Cities.map(city => (
-            <Picker.Item key={city.id} label={city.name} value={city.id} />
-          ))}
-        </Picker>
-        {errors.destinationCityId && <Text style={styles.errorText}>{errors.destinationCityId}</Text>}
-      </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Travel Date</Text>
-        <TextInput
-          style={[styles.input, errors.travelDate && styles.errorInput]}
-          value={travelDate}
-          editable={isEditMode}
-          onChangeText={setTravelDate}
-          placeholder="YYYY-MM-DD"
-        />
-        {errors.travelDate && <Text style={styles.errorText}>{errors.travelDate}</Text>}
-      </View>
-
-      <View style={styles.switchGroup}>
-        <Text style={styles.label}>Is Round Trip?</Text>
-        <Switch
-          value={isRoundTrip}
-          onValueChange={setIsRoundTrip}
-          disabled={!isEditMode}
-        />
-      </View>
-
-      {isRoundTrip && (
+    <FlatList
+      data={[]}
+      renderItem={() => null}
+      ListHeaderComponent={
+        <>  
+        <View style={styles.container}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backButtonText}>{'< Back'}</Text>
+        </TouchableOpacity>
+  
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Return Date</Text>
+          <Text style={styles.label}>Code</Text>
           <TextInput
-            style={[styles.input, errors.returnDate && styles.errorInput]}
-            value={returnDate}
+            style={[styles.input, errors.code && styles.errorInput]}
+            value={code}
             editable={isEditMode}
-            onChangeText={setReturnDate}
+            onChangeText={setCode}
+            placeholder="Enter Code"
+          />
+          {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
+        </View>
+  
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Project</Text>
+          <Picker
+            selectedValue={projectId}
+            onValueChange={setProjectId}
+            enabled={isEditMode}
+            style={styles.input}
+          >
+            <Picker.Item label="Choose..." value="" />
+            {Projects.map(project => (
+              <Picker.Item key={project.id} label={project.name} value={project.id} />
+            ))}
+          </Picker>
+          {errors.projectId && <Text style={styles.errorText}>{errors.projectId}</Text>}
+        </View>
+  
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Description</Text>
+          <TextInput
+            style={styles.input}
+            value={description}
+            editable={isEditMode}
+            onChangeText={setDescription}
+            placeholder="Enter Description"
+            multiline
+          />
+        </View>
+  
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Origin City</Text>
+          <Picker
+            selectedValue={originCityId}
+            onValueChange={setOriginCityId}
+            enabled={isEditMode}
+            style={styles.input}
+          >
+            <Picker.Item label="Choose..." value="" />
+            {Cities.map(city => (
+              <Picker.Item key={city.id} label={city.name} value={city.id} />
+            ))}
+          </Picker>
+          {errors.originCityId && <Text style={styles.errorText}>{errors.originCityId}</Text>}
+        </View>
+  
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Destination City</Text>
+          <Picker
+            selectedValue={destinationCityId}
+            onValueChange={setDestinationCityId}
+            enabled={isEditMode}
+            style={styles.input}
+          >
+            <Picker.Item label="Choose..." value="" />
+            {Cities.map(city => (
+              <Picker.Item key={city.id} label={city.name} value={city.id} />
+            ))}
+          </Picker>
+          {errors.destinationCityId && <Text style={styles.errorText}>{errors.destinationCityId}</Text>}
+        </View>
+  
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Travel Date</Text>
+          <TextInput
+            style={[styles.input, errors.travelDate && styles.errorInput]}
+            value={travelDate}
+            editable={isEditMode}
+            onChangeText={setTravelDate}
             placeholder="YYYY-MM-DD"
           />
-          {errors.returnDate && <Text style={styles.errorText}>{errors.returnDate}</Text>}
+          {errors.travelDate && <Text style={styles.errorText}>{errors.travelDate}</Text>}
         </View>
-      )}
-
-      <View style={styles.switchGroup}>
-        <Text style={styles.label}>Is Hotel Needed?</Text>
-        <Switch
-          value={isHotelNeeded}
-          onValueChange={setIsHotelNeeded}
-          disabled={!isEditMode}
-        />
-      </View>
-
-      {isHotelNeeded && (
-        <>
+  
+        <View style={styles.switchGroup}>
+          <Text style={styles.label}>Is Round Trip?</Text>
+          <Switch
+            value={isRoundTrip}
+            onValueChange={setIsRoundTrip}
+            disabled={!isEditMode}
+          />
+        </View>
+  
+        {isRoundTrip && (
           <View style={styles.inputGroup}>
-            <Text style={styles.label}>Check-In Date</Text>
+            <Text style={styles.label}>Return Date</Text>
             <TextInput
-              style={[styles.input, errors.checkInDate && styles.errorInput]}
-              value={checkInDate}
+              style={[styles.input, errors.returnDate && styles.errorInput]}
+              value={returnDate}
               editable={isEditMode}
-              onChangeText={setCheckInDate}
+              onChangeText={setReturnDate}
               placeholder="YYYY-MM-DD"
             />
-            {errors.checkInDate && <Text style={styles.errorText}>{errors.checkInDate}</Text>}
+            {errors.returnDate && <Text style={styles.errorText}>{errors.returnDate}</Text>}
           </View>
-
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>Check-Out Date</Text>
-            <TextInput
-              style={[styles.input, errors.checkOutDate && styles.errorInput]}
-              value={checkOutDate}
-              editable={isEditMode}
-              onChangeText={setCheckOutDate}
-              placeholder="YYYY-MM-DD"
-            />
-            {errors.checkOutDate && <Text style={styles.errorText}>{errors.checkOutDate}</Text>}
-          </View>
-        </>
-      )}
-      
-      {/* Save Draft and Submit buttons */}
-      {requestStatusId === 3 && (
-        <View style={styles.buttonRow}>
-          <Button title="Save Draft" color="skyblue" onPress={sendUpdate1} />
-          <Button title="Submit" color="green" onPress={Submit} />
+        )}
+  
+        <View style={styles.switchGroup}>
+          <Text style={styles.label}>Is Hotel Needed?</Text>
+          <Switch
+            value={isHotelNeeded}
+            onValueChange={setIsHotelNeeded}
+            disabled={!isEditMode}
+          />
         </View>
-      )}
-
-      {/* Quoting and Approving logic below */}
-
-      {requestStatusId === 7 && role === 2 && (
-        <>
-          <QuoteAdd onRefresh={handleRefresh} />
-          <QuoteList refreshTrigger={refreshTrigger} oriId={originCityId} destId={destinationCityId} select={false} selected={false} disable={false} refreshstatus={function (): void {
+  
+        {isHotelNeeded && (
+          <>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Check-In Date</Text>
+              <TextInput
+                style={[styles.input, errors.checkInDate && styles.errorInput]}
+                value={checkInDate}
+                editable={isEditMode}
+                onChangeText={setCheckInDate}
+                placeholder="YYYY-MM-DD"
+              />
+              {errors.checkInDate && <Text style={styles.errorText}>{errors.checkInDate}</Text>}
+            </View>
+  
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Check-Out Date</Text>
+              <TextInput
+                style={[styles.input, errors.checkOutDate && styles.errorInput]}
+                value={checkOutDate}
+                editable={isEditMode}
+                onChangeText={setCheckOutDate}
+                placeholder="YYYY-MM-DD"
+              />
+              {errors.checkOutDate && <Text style={styles.errorText}>{errors.checkOutDate}</Text>}
+            </View>
+          </>
+        )}
+        
+        {/* Save Draft and Submit buttons */}
+        {requestStatusId === 3 && (
+          <View style={styles.buttonRow}>
+            <Button title="Save Draft" color="skyblue" onPress={sendUpdate1} />
+            <Button title="Submit" color="green" onPress={Submit} />
+          </View>
+        )}
+  
+        {/* Quoting and Approving logic below */}
+  
+        {requestStatusId === 7 && role === 2 && (
+          <>
+            <QuoteAdd onRefresh={handleRefresh} />
+            <QuoteList refreshTrigger={refreshTrigger} oriId={originCityId} destId={destinationCityId} select={false} selected={false} disable={false} refreshstatus={function (): void {
+              throw new Error('Function not implemented.');
+            } } />
+            <Button title="Finish Quoting" onPress={() => sendUpdateRequest(2)} />
+          </>
+        )}
+  
+        {requestStatusId === 6 && role === 3 && (
+          <>
+            <Button title="Reject" color="red" onPress={() => setShowAdd(true)} />
+            {showAdd && <JustificationAdd requestId={requestIdNumber} show={showAdd} handleClose={() => setShowAdd(false)} onRefresh={fetchData} />}
+            <Button title="Approve" color="green" onPress={() => sendUpdateRequest(5)} />
+          </>
+        )}
+  
+        {(requestStatusId === 1 || requestStatusId === 5 || requestStatusId === 6) && (
+          <QuoteList refreshTrigger={refreshTrigger} select={false} selected={true} disable={true} refreshstatus={function (): void {
             throw new Error('Function not implemented.');
-          } } />
-          <Button title="Finish Quoting" onPress={() => sendUpdateRequest(2)} />
-        </>
-      )}
-
-      {requestStatusId === 6 && role === 3 && (
-        <>
-          <Button title="Reject" color="red" onPress={() => setShowAdd(true)} />
-          {showAdd && <JustificationAdd requestId={requestIdNumber} show={showAdd} handleClose={() => setShowAdd(false)} onRefresh={fetchData} />}
-          <Button title="Approve" color="green" onPress={() => sendUpdateRequest(5)} />
-        </>
-      )}
-
-      {(requestStatusId === 1 || requestStatusId === 5 || requestStatusId === 6) && (
-        <QuoteList refreshTrigger={refreshTrigger} select={false} selected={true} disable={true} refreshstatus={function (): void {
-          throw new Error('Function not implemented.');
-        } } oriId={0} destId={0} />
-      )}
-
-      {requestStatusId === 1 && justification !== "" && (
-        <View style={{ marginTop: 20 }}>
-          <Text style={styles.justificationTitle}>Justification:</Text>
-          <Text style={styles.justificationText}>{justification}</Text>
-        </View>
-      )}
-    </ScrollView>
+          } } oriId={0} destId={0} />
+        )}
+  
+        {requestStatusId === 1 && justification !== "" && (
+          <View style={{ marginTop: 20 }}>
+            <Text style={styles.justificationTitle}>Justification:</Text>
+            <Text style={styles.justificationText}>{justification}</Text>
+          </View>
+        )}
+      </View></>
+      }
+    />  
   );
 };
 
@@ -399,7 +438,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, fontWeight: 'bold', color: '#fff', marginBottom: 20 },
   inputGroup: { marginBottom: 15 },
   label: { color: '#fff', marginBottom: 5 },
-  input: { backgroundColor: '#fff', padding: 10, borderRadius: 5 },
+  input: { backgroundColor: '#000', padding: 10, borderRadius: 5 },
   errorInput: { borderColor: 'red', borderWidth: 1 },
   errorText: { color: 'red', fontSize: 12 },
   backButton: { marginBottom: 10 },

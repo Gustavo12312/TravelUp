@@ -11,6 +11,7 @@ import { url } from '@/components/Host';
 import authHeader from '../../utils/auth.header';
 import { getUserid, getUserRole } from '../../utils/auth.utils';
 import { useAuth } from '../../utils/auth.context';
+import Toast from 'react-native-toast-message';
 
 const baseUrl = url;
 
@@ -51,10 +52,10 @@ const RequestList = () => {
         if (res.data.success) {
           setDataRequest(res.data.data);
         } else {
-          Alert.alert('Error', 'Error Web Service');
+          Toast.show({type: "error", text1: "Error", text2: "Error Web Service"});
         }
       })
-      .catch(error => Alert.alert('Error', error.message));
+      .catch(error => Toast.show({type: "error", text1: "Error", text2: error.message}));
   };
 
   const OnDelete = async (id: number) => {
@@ -82,18 +83,18 @@ const RequestList = () => {
     axios.delete(url, { headers })
       .then(response => {
         if (response.data.success) {
-          Alert.alert('Deleted', 'Request has been deleted.');
+          Toast.show({type: "error", text1: "Deleted", text2: "Request has been deleted."});
           LoadRequest();
         }
       })
-      .catch(() => Alert.alert('Error', 'Error deleting request'));
+      .catch(() => Toast.show({type: "error", text1: "Error", text2: "Error deleting request"}) );
   };
 
   const downloadApprovedRequests = async () => {
     const approved = dataRequest.filter(req => req.requeststatus.label === 'Approved');
 
     if (approved.length === 0) {
-      Alert.alert('Info', 'No approved requests');
+      Toast.show({type: "info", text1: "Info", text2: "No approved requests"});
       return;
     }
 

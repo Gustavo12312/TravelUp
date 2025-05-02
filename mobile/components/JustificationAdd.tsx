@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import authHeader from "../utils/auth.header";
 import { useAuthentication } from "../utils/auth.utils";
 import { url } from "./Host";
+import Toast from "react-native-toast-message";
 
 const baseUrl = url;
 
@@ -44,15 +45,15 @@ const JustificationAdd = ({ requestId, show, handleClose, onRefresh }: { request
             .put(url, datapost, { headers })
             .then((response) => {
                 if (response.data.success) {
-                    alert(response.data.message);
+                     Toast.show({type: "success", text1: "Sucess", text2: response.data.message});                   
                     handleClose();
                     onRefresh();
-                } else {
-                    alert(response.data.message || "Error updating request");
+                } else {             
+                     Toast.show({type: "error", text1: "Error", text2: response.data.message || "Error updating request"});
                 }
             })
-            .catch((error) => {
-                alert("Error: " + error);
+            .catch((error) => {                
+                Toast.show({type: "error", text1: "Error", text2: "Error: " + error});
             });
     };
 
