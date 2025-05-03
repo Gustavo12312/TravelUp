@@ -35,8 +35,8 @@ export default function CustomDrawerContent(props: any) {
       }
     };
   
-    loadData(); // Call the function outside of its own declaration
-  }, [Authenticated]); // Also include Authenticated as a dependency
+    loadData();
+  }, [Authenticated]); 
   
 
   const logOut = () => {
@@ -60,7 +60,6 @@ export default function CustomDrawerContent(props: any) {
 
         <Button title="Logout" onPress={logOut} color="#dc3545" />
       </View>
-
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
   );

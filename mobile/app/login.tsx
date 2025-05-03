@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ImageBackground} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ImageBackground, TouchableOpacity} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../utils/auth.context'; // 👈 Use context
-import { blue } from 'react-native-reanimated/lib/typescript/Colors';
+import { useAuth } from '../utils/auth.context';
 
 
 type FormData = {
@@ -43,7 +42,7 @@ export default function LoginComponent() {
 
   return (
     <ImageBackground
-      source={require('../assets/images/plane.jpg')} // Replace with your image path
+      source={require('../assets/images/plane12.jpg')} // Replace with your image path
       style={styles.background}
       resizeMode="cover"
     >
@@ -58,7 +57,8 @@ export default function LoginComponent() {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={styles.input}
-              placeholder="Enter your email"
+              placeholder="Enter your email..."
+              placeholderTextColor={'#666'}
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
@@ -76,7 +76,8 @@ export default function LoginComponent() {
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               style={styles.input}
-              placeholder="Enter your password"
+              placeholder="Enter your password..."
+              placeholderTextColor={'#666'}
               secureTextEntry
               onBlur={onBlur}
               onChangeText={onChange}
@@ -86,9 +87,15 @@ export default function LoginComponent() {
         />
         {errors.password && <Text style={styles.error}>{String(errors.password.message)}</Text>}
 
-        <View style={styles.buttonContainer}>
-          <Button title={loading ? "Logging in..." : "Login"} onPress={handleSubmit(onSubmit)} />
-        </View>
+        <TouchableOpacity style={styles.loginButton} onPress={handleSubmit(onSubmit)}>
+          <Text style={styles.loginButtonText}>
+            {loading ? "Logging in..." : "Login"}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.replace('/register')}>
+                <Text style={styles.link}> Don´t have an account? Register</Text>
+              </TouchableOpacity>
 
         {message ? <Text style={styles.error}>{message}</Text> : null}
       </View>
@@ -100,18 +107,37 @@ const styles = StyleSheet.create({
   background: {
     flex: 1,
     justifyContent: 'center',
+    width: '100%',
+    height: '100%',
   },
   overlay: {
-    backgroundColor: 'rgba(0,0,0,0.3)', // Darken for readability
+    backgroundColor: 'rgba(0,0,0,0.2)',
     padding: 24,
     borderRadius: 12,
     margin: 20,
   },
+  link: {
+    marginTop: 20,
+    color: '#fff',
+    textAlign: 'center',
+  },
+  loginButton: {
+    backgroundColor: '#5FABE6',
+    padding: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  loginButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   title: {
     fontSize: 32,
-    marginBottom: 24,
-    textAlign: 'center',
+    marginBottom: 20,
     fontWeight: 'bold',
+    textAlign: 'center',
     color: '#fff',
   },
   label: {
@@ -124,16 +150,13 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     borderRadius: 8,
     padding: 10,
-    marginBottom: 12,
+    marginBottom: 8,
     backgroundColor: '#fff',
   },
   buttonContainer: {
     marginTop: 12,
     backgroundColor: '#5FABE6',
-    borderRadius: 12,
-    width: 100,
-    alignItems: 'center'
-    
+    borderRadius: 12,    
   },
   error: {
     color: 'red',

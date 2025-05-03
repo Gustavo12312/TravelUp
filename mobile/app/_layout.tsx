@@ -66,6 +66,10 @@ export default function RootLayout() {
             name="login"
             options={{ drawerItemStyle: { display: 'none' }, headerShown: false }}
           />
+           <Drawer.Screen
+            name="register"
+            options={{ drawerItemStyle: { display: 'none' }, headerShown: false  }}
+          />
           <Drawer.Screen
             name="+not-found"
             options={{ drawerItemStyle: { display: 'none' } }}

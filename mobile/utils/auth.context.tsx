@@ -5,6 +5,7 @@ import Toast from 'react-native-toast-message';
 
 type AuthContextType = {
   login: (email: string, password: string) => Promise<any>;
+  register: (name: string, email: string, password: string, roleId: number) => Promise<any>;
   getRole: () => Promise<any>;
   getUserId: () => Promise<any>;
   authChanged: number;
@@ -29,6 +30,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return res;
   };
 
+  const register = async (name: string, email: string, password: string, roleId: number) => {
+    const res = await AuthService.register(name, email, password, roleId);
+    return res;
+  };
+
   const getRole = async () => {
     const res = await getUserRole();
     setrole(res);
@@ -42,7 +48,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ login, authChanged, getRole, role, getUserId, userId }}>
+    <AuthContext.Provider value={{ login, register, authChanged, getRole, role, getUserId, userId }}>
       {children}
     </AuthContext.Provider>
   );
