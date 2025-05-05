@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Button, TouchableOpacity } from 'react-native';
+import { View, Text, Button, TouchableOpacity, StyleSheet } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import axios from 'axios';
 import AuthService from '../utils/auth.service';
@@ -55,12 +55,30 @@ export default function CustomDrawerContent(props: any) {
           onPress={() => router.push({ pathname: '/Detail/DetailEdit', params: { userId: String(userId) } })}
           style={{ marginBottom: 15 }}
         >
-          <Text style={{ color: '#007bff' }}>View Profile</Text>
+          <Text style={{ color: '#6190E6' }}>View Profile</Text>
         </TouchableOpacity>
 
-        <Button title="Logout" onPress={logOut} color="#dc3545" />
+        <TouchableOpacity style={styles.logoutButton} onPress={logOut}>
+          <Text style={styles.logoutButtonText}>Logout</Text>
+        </TouchableOpacity>
       </View>
       <DrawerItemList {...props} />
     </DrawerContentScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  logoutButton: {
+    backgroundColor: '#dc3545',
+    padding: 12,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  logoutButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
+

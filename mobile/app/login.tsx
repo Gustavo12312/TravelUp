@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, ImageBackground, TouchableOp
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../utils/auth.context';
+import BackgroundWrapper from '@/components/BackgroundWrapper';
 
 
 type FormData = {
@@ -41,12 +42,8 @@ export default function LoginComponent() {
   };
 
   return (
-    <ImageBackground
-      source={require('../assets/images/plane12.jpg')} // Replace with your image path
-      style={styles.background}
-      resizeMode="cover"
-    >
-      <View style={styles.overlay}>
+    <BackgroundWrapper>
+        <View style={styles.overlay}>
         <Text style={styles.title}>Login</Text>
 
         <Text style={styles.label}>Email</Text>
@@ -99,17 +96,11 @@ export default function LoginComponent() {
 
         {message ? <Text style={styles.error}>{message}</Text> : null}
       </View>
-    </ImageBackground>
+      </BackgroundWrapper>
   );
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
-  },
   overlay: {
     backgroundColor: 'rgba(0,0,0,0.2)',
     padding: 24,
@@ -122,7 +113,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   loginButton: {
-    backgroundColor: '#5FABE6',
+    backgroundColor: '#6190E6',
     padding: 12,
     borderRadius: 10,
     alignItems: 'center',

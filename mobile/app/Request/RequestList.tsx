@@ -12,6 +12,8 @@ import authHeader from '../../utils/auth.header';
 import { getUserid, getUserRole } from '../../utils/auth.utils';
 import { useAuth } from '../../utils/auth.context';
 import Toast from 'react-native-toast-message';
+import BackgroundWrapper from '@/components/BackgroundWrapper';
+import { MaterialIcons } from '@expo/vector-icons';
 
 const baseUrl = url;
 
@@ -161,10 +163,10 @@ const RequestList = () => {
       <Text style={styles.cell}>{item.requeststatus.label}</Text>
       <View style={[styles.cell, styles.actionsCell]}>
         <TouchableOpacity onPress={() =>  router.push({ pathname: '/Request/RequestEdit', params: { requestId: item.id },})}>
-          <Text style={styles.link}>Edit</Text>
+          <MaterialIcons name="edit" size={24} color="#007bff" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => OnDelete(item.id)}>
-          <Text style={styles.link}>Delete</Text>
+          <MaterialIcons name="delete" size={28} color="#dc3545" />
         </TouchableOpacity>
       </View>
     </View>
@@ -180,11 +182,18 @@ const RequestList = () => {
   );
 
   return (
+    <BackgroundWrapper>
     <View style={styles.container}>
       <View style={styles.buttonRow}>
-        <Button title="Export PDF" onPress={exportApprovedRequestsPDF} />
-        <Button title="Export Excel" onPress={downloadApprovedRequests} />
-        <Button title="Add Request" onPress={() => router.push('/Request/RequestAdd')} />
+        <TouchableOpacity style={styles.Button} onPress={exportApprovedRequestsPDF}>
+          <Text style={styles.ButtonText}> Export PDF</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.Button} onPress={downloadApprovedRequests}>
+          <Text style={styles.ButtonText}> Export Excel</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.Button} onPress={() => router.push('/Request/RequestAdd')}>
+          <Text style={styles.ButtonText}> Add Request</Text>
+        </TouchableOpacity>
       </View>
       <FlatList
         data={dataRequest}
@@ -195,6 +204,7 @@ const RequestList = () => {
           <Text style={styles.emptyText}>No requests available.</Text>}
       />
     </View>
+    </BackgroundWrapper>
   );
 };
 
@@ -202,7 +212,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#121212',
   },
   title: {
     fontSize: 24,
@@ -215,7 +224,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontWeight: 'bold',
-    color: '#333',
+    color: '#000',
   },
   buttonRow: {
     flexDirection: 'row',
@@ -226,12 +235,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     padding: 12,
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#F7F0D3',
     marginBottom: 8,
     borderRadius: 8,
   },
   cell: {
-    color: '#fff',
+    color: '#000',
     flex: 1,
   },
   actionsCell: {
@@ -239,14 +248,32 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
   },
   link: {
-    color: '#00f',
+    color: '#6190E6',
     marginLeft: 10,
+    fontWeight: 'bold'
+  },
+  linkdelete: {
+    color: 'red',
+    marginLeft: 10,
+    fontWeight: 'bold'
   },
   emptyText: {
     textAlign: 'center',
     color: '#aaa',
     marginTop: 20,
     fontSize: 16,
+  },
+  Button: {
+    backgroundColor: '#6190E6',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  ButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },  
 });
 

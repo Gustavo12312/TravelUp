@@ -236,11 +236,7 @@ const RequestEdit = () => {
       renderItem={() => null}
       ListHeaderComponent={
         <>  
-        <View style={styles.container}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Text style={styles.backButtonText}>{'< Back'}</Text>
-        </TouchableOpacity>
-  
+        <View style={styles.container}>    
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Code</Text>
           <TextInput

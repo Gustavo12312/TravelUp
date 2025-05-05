@@ -14,3 +14,11 @@
   value={projectId}
   onChange={item => setProjectId(item.value)}
 />
+
+
+<Picker selectedValue={projectId} onValueChange={setProjectId} style={styles.input}  itemStyle={styles.pickerItem}>
+        <Picker.Item label="Select project" value="" />
+        {Projects.map(project => (
+          <Picker.Item key={project.id} label={project.name} value={project.id} />
+        ))}
+      </Picker>

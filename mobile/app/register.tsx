@@ -7,6 +7,7 @@ import authHeader from '../utils/auth.header';
 import { useAuth } from '../utils/auth.context';
 import { Dropdown } from 'react-native-element-dropdown'; 
 import { url } from '@/components/Host';
+import BackgroundWrapper from '@/components/BackgroundWrapper';
 
 const baseUrl = url;
 
@@ -86,13 +87,8 @@ export default function RegisterComponent() {
   };
 
   return (
-    <ImageBackground
-          source={require('../assets/images/plane12.jpg')} // Replace with your image path
-          style={styles.background}
-          resizeMode="cover"
-        >
 
-        
+    <BackgroundWrapper>
     <View style={styles.overlay}>
       <Text style={styles.title}>Register</Text>
 
@@ -178,7 +174,7 @@ export default function RegisterComponent() {
 
       {message ? <Text style={styles.error}>{message}</Text> : null}
     </View>
-    </ImageBackground>
+    </BackgroundWrapper>
   );
 }
 
@@ -188,12 +184,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     flexGrow: 1,
     backgroundColor: '#f9f9f9',
-  },
-  background: {
-    flex: 1,
-    justifyContent: 'center',
-    width: '100%',
-    height: '100%',
   },
   overlay: {
     backgroundColor: 'rgba(0,0,0,0.2)',
@@ -222,7 +212,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   loginButton: {
-    backgroundColor: '#5FABE6',
+    backgroundColor: '#6190E6',
     padding: 12,
     borderRadius: 10,
     alignItems: 'center',

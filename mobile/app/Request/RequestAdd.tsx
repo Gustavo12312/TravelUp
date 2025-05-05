@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, Alert, ScrollView, Switch, StyleSheet, FlatList } from 'react-native';
+import { View, Text, TextInput, Button, Alert, ScrollView, Switch, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
@@ -8,6 +8,8 @@ import { useAuth } from '@/utils/auth.context';
 import { router } from 'expo-router';
 import { url } from '@/components/Host';
 import Toast from 'react-native-toast-message';
+import BackgroundWrapper from '@/components/BackgroundWrapper';
+import { Dropdown } from 'react-native-element-dropdown';
 
 const baseUrl = url ;
 
@@ -139,27 +141,38 @@ const RequestAdd = () => {
   };
 
 
-return (
-  <FlatList
-  data={[]}
-  renderItem={() => null}
-  ListHeaderComponent={
-    <>
+return (    
+    <BackgroundWrapper>
     <View style={styles.container}>
     <View style={styles.inputGroup}>
       <Text style={styles.label}>Code</Text>
-      <TextInput style={[styles.input, errors.code && styles.errorInput]} value={code} onChangeText={setCode} placeholder='Code...' />
+      <TextInput style={[styles.input, errors.code && styles.errorInput]} 
+        value={code} 
+        onChangeText={setCode} 
+        placeholder='Code...' 
+        placeholderTextColor='#000'
+      />
       {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
     </View>
 
     <View style={styles.inputGroup}>
       <Text style={styles.label}>Project</Text>
-      <Picker selectedValue={projectId} onValueChange={setProjectId} style={styles.input}>
-        <Picker.Item label="Select project" value="" />
-        {Projects.map(project => (
-          <Picker.Item key={project.id} label={project.name} value={project.id} />
-        ))}
-      </Picker>
+      <Dropdown
+        style={[styles.dropdown, errors.code && styles.errorInput]}
+        containerStyle={styles.dropdownContainer}
+        placeholderStyle={styles.placeholder}
+        selectedTextStyle={styles.Text}
+        itemTextStyle={styles.Text}
+        data={Projects.map(project => ({
+          label: project.name,
+          value: project.id,
+        }))}
+        labelField="label"
+        valueField="value"
+        placeholder="Select project"
+        value={projectId}
+        onChange={item => setProjectId(item.value)}
+      />     
       {errors.projectId && <Text style={styles.errorText}>{errors.projectId}</Text>}
     </View>
 
@@ -171,28 +184,49 @@ return (
         value={description}
         onChangeText={setDescription}
         placeholder='Description...'
+        placeholderTextColor='#000'
       />
     </View>
 
     <View style={styles.inputGroup}>
       <Text style={styles.label}>Origin City</Text>
-      <Picker selectedValue={originCityId} onValueChange={setOriginCityId} style={styles.input}>
-        <Picker.Item label="Select origin" value="" />
-        {Cities.map(city => (
-          <Picker.Item key={city.id} label={city.name} value={city.id} />
-        ))}
-      </Picker>
+      <Dropdown
+        style={[styles.dropdown, errors.code && styles.errorInput]}
+        containerStyle={styles.dropdownContainer}
+        placeholderStyle={styles.placeholder}
+        selectedTextStyle={styles.Text}
+        itemTextStyle={styles.Text}
+        data={Cities.map(city => ({
+          label: city.name,
+          value: city.id,
+        }))}
+        labelField="label"
+        valueField="value"
+        placeholder="Select Origin City"
+        value={originCityId}
+        onChange={item => setOriginCityId(item.value)}
+      />
       {errors.originCityId && <Text style={styles.errorText}>{errors.originCityId}</Text>}
     </View>
 
     <View style={styles.inputGroup}>
       <Text style={styles.label}>Destination City</Text>
-      <Picker selectedValue={destinationCityId} onValueChange={setDestinationCityId} style={styles.input}>
-        <Picker.Item label="Select destination" value="" />
-        {Cities.map(city => (
-          <Picker.Item key={city.id} label={city.name} value={city.id} />
-        ))}
-      </Picker>
+      <Dropdown
+        style={[styles.dropdown, errors.code && styles.errorInput]}
+        containerStyle={styles.dropdownContainer}
+        placeholderStyle={styles.placeholder}
+        selectedTextStyle={styles.Text}
+        itemTextStyle={styles.Text}
+        data={Cities.map(city => ({
+          label: city.name,
+          value: city.id,
+        }))}
+        labelField="label"
+        valueField="value"
+        placeholder="Select Destination City"
+        value={destinationCityId}
+        onChange={item => setDestinationCityId(item.value)}
+      />
       {errors.destinationCityId && <Text style={styles.errorText}>{errors.destinationCityId}</Text>}
     </View>
 
@@ -205,6 +239,7 @@ return (
       <Text style={styles.label}>Travel Date</Text>
       <TextInput
         placeholder="YYYY-MM-DD"
+        placeholderTextColor='#000'
         style={[styles.input, errors.travelDate && styles.errorInput]}
         value={travelDate}
         onChangeText={setTravelDate}
@@ -217,6 +252,7 @@ return (
         <Text style={styles.label}>Return Date</Text>
         <TextInput
           placeholder="YYYY-MM-DD"
+          placeholderTextColor='#000'
           style={[styles.input, errors.returnDate && styles.errorInput]}
           value={returnDate}
           onChangeText={setReturnDate}
@@ -236,6 +272,7 @@ return (
           <Text style={styles.label}>Check-In Date</Text>
           <TextInput
             placeholder="YYYY-MM-DD"
+            placeholderTextColor='#000'
             style={[styles.input, errors.checkInDate && styles.errorInput]}
             value={checkInDate}
             onChangeText={setCheckInDate}
@@ -247,6 +284,7 @@ return (
           <Text style={styles.label}>Check-Out Date</Text>
           <TextInput
             placeholder="YYYY-MM-DD"
+            placeholderTextColor='#000'
             style={[styles.input, errors.checkOutDate && styles.errorInput]}
             value={checkOutDate}
             onChangeText={setCheckOutDate}
@@ -256,27 +294,54 @@ return (
       </>
     )}
 
-    <View style={styles.buttonRow}>
-      <Button title="Save Draft" color="#17a2b8" onPress={() => handleSubmit(3)} />
-      <Button title="Submit" color="#28a745" onPress={() => handleSubmit(4)} />
+    <View>
+        <TouchableOpacity style={styles.ButtonDraft} onPress={() => handleSubmit(3)}>
+          <Text style={styles.ButtonText}> Save Draft</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.ButtonSubmit} onPress={() => handleSubmit(4)}>
+          <Text style={styles.ButtonText}> Submit</Text>
+        </TouchableOpacity>
+
     </View>
   </View>
-    </>
-  }
-/>
-  
-    );
+  </BackgroundWrapper>
+  );
 };
 export default RequestAdd;
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#111' },
+    container: { flex: 1, padding: 16 },
     title: { fontSize: 24, fontWeight: 'bold', color: '#fff', marginBottom: 20 },
     inputGroup: { marginBottom: 15 },
-    label: { color: '#fff', marginBottom: 5 },
-    input: { backgroundColor: '#000', color: '#fff', padding: 10, borderRadius: 5 },
+    label: { color: '#000', marginBottom: 5, fontWeight: 'bold' },
+    input: { backgroundColor: '#fff', color: '#000', padding: 10, borderRadius: 5 },    
     errorInput: { borderColor: 'red', borderWidth: 1 },
     errorText: { color: 'red', fontSize: 12 },
     switchGroup: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-    buttonRow: { marginTop: 20, gap: 10 },
+    backButton: { marginBottom: 10 },
+    backButtonText: { color: '#00f', fontSize: 18 },
+    pickerItem: { color: '#000' },
+    dropdown: { height: 40, borderRadius: 5, paddingHorizontal: 10, backgroundColor: '#fff' },
+    dropdownContainer: { borderRadius: 8, backgroundColor: '#fff', },
+    placeholder: { color: '#999', fontSize: 14, },
+    Text: { color: '#000', fontSize: 14, },
+    ButtonDraft: {
+      backgroundColor: '#17a2b8',
+      padding: 8,
+      borderRadius: 10,
+      alignItems: 'center',
+      marginTop: 12,
+    },
+    ButtonSubmit: {
+      backgroundColor: '#28a745',
+      padding: 8,
+      borderRadius: 10,
+      alignItems: 'center',
+      marginTop: 12,
+    },
+    ButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },  
   });

@@ -1,7 +1,7 @@
 import { Drawer } from 'expo-router/drawer';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'expo-router';
+import { useRouter, usePathname } from 'expo-router';
 import CustomDrawerContent from '../components/CustomDrawer';
 import { isAuth } from '../utils/auth.utils';
 import { AuthProvider, useAuth } from '../utils/auth.context'; 
@@ -22,8 +22,12 @@ export default function RootLayout() {
   }, []);
 
   useEffect(() => {
-    if (isReady && !authenticated) {
+    if (!isReady) return;
+
+    if (!authenticated) {
       router.replace('/login');
+    } else if (authenticated) {
+      router.replace('/Homepage');
     }
   }, [isReady, authenticated]);
 
@@ -37,10 +41,11 @@ export default function RootLayout() {
         <Drawer
           drawerContent={(props) => <CustomDrawerContent {...props} />}
           screenOptions={{          
-            drawerStyle: { backgroundColor: '#1e1e1e' },
+            drawerStyle: { backgroundColor: '#1E1E2F' },
             drawerLabelStyle: { color: '#fff' },
             headerStyle: {
-              backgroundColor: '#25292e',
+              backgroundColor: '#1E1E2F',
+              //#EAF4FB
             },
             headerShadowVisible: false,
             headerTintColor: '#fff',
