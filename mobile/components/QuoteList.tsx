@@ -8,6 +8,9 @@ import FlightList from "../app/QuoteFlight/FlightList";
 import QuoteHotelList from "../app/QuoteHotel/QuoteHotelList";
 import { url } from "./Host";
 import Toast from "react-native-toast-message";
+import { MaterialIcons } from '@expo/vector-icons';
+import Collapsible from 'react-native-collapsible';
+
 
 const baseUrl = url;
 
@@ -26,6 +29,8 @@ const [dataQuote, setDataQuote] = useState([]);
 const [totalFlightCost, setTotalFlightCost] = useState<{ [key: number]: number }>({});
 const [totalHotelCost, setTotalHotelCost] = useState<{ [key: number]: number }>({});
 const { requestId } = useLocalSearchParams();
+const [openQuoteIds, setOpenQuoteIds] = useState<number[]>([]);
+
 
   useEffect(() => {
     LoadQuote();
@@ -38,6 +43,15 @@ const { requestId } = useLocalSearchParams();
   const handleHotelTotalChange = (quoteId: number, total: number) => {
     setTotalHotelCost((prev) => ({ ...prev, [quoteId]: total }));
   };
+
+  const toggleAccordion = (quoteId: number) => {
+    setOpenQuoteIds(prev =>
+      prev.includes(quoteId)
+        ? prev.filter(id => id !== quoteId)
+        : [...prev, quoteId]
+    );
+  };
+  
 
   const LoadQuote = async() => {
     const url = selected
@@ -111,32 +125,63 @@ const { requestId } = useLocalSearchParams();
 
   const renderItem = ({ item }: { item: Quote }) => {
     if (!item || typeof item.id !== 'number') return null;
+  
     const quoteCost = (totalFlightCost[item.id] || 0) + (totalHotelCost[item.id] || 0);
-
+    const isOpen = openQuoteIds.includes(item.id);
+  
     return (
-      <View style={styles.card}>
-        <View style={styles.row}>
-          <Text style={styles.agency}>Agency: {item.agency.name}</Text>
-          <Text style={styles.cost}>Total Cost: €{quoteCost}</Text>
-        </View>
-        {select && (
-          <TouchableOpacity onPress={() => SendUpdate(item.id)} style={styles.selectBtn}>
-            <Text style={styles.btnText}>Select</Text>
-          </TouchableOpacity>
-        )}
-        {!disable && (
-          <TouchableOpacity onPress={() => OnDelete(item.id)} style={styles.deleteBtn}>
-            <Text style={styles.btnText}>Delete</Text>
-          </TouchableOpacity>
-        )}
-        <FlightList quoteId={item.id} disable={disable} onTotalChange={(t) => handleFlightTotalChange(item.id, t)} oriId={oriId} destId={destId} />
-        <QuoteHotelList quoteId={item.id} disable={disable} onTotalChange={(t) => handleHotelTotalChange(item.id, t)} oriId={oriId} destId={destId} />
+      <View style={styles.container}>
+       <TouchableOpacity onPress={() => toggleAccordion(item.id)} style={styles.accordionHeader}>
+          <View style={styles.headerContent}>
+          {!disable && (
+              <TouchableOpacity onPress={() => OnDelete(item.id)} style={styles.deleteBtn}>
+                <MaterialIcons name="delete" size={26} color="#dc3545" />
+              </TouchableOpacity>
+            )}
+            <Text style={styles.agency}>Agency: {item.agency.name}</Text>            
+            <View style={styles.rightSection}>
+              <Text style={styles.cost}>€{quoteCost}</Text>              
+              <MaterialIcons
+                name={isOpen ? 'keyboard-arrow-up' : 'keyboard-arrow-down'}
+                size={24}
+                color="#333"
+                style={styles.arrowIcon}
+              />
+            </View>
+          </View>
+        </TouchableOpacity>
+
+  
+        <Collapsible collapsed={!isOpen}>
+          {select && (
+            <TouchableOpacity onPress={() => SendUpdate(item.id)} style={styles.selectBtn}>
+              <Text style={styles.btnText}>Select</Text>
+            </TouchableOpacity>
+          )}
+          
+          <FlightList
+            quoteId={item.id}
+            disable={disable}
+            onTotalChange={(t) => handleFlightTotalChange(item.id, t)}
+            oriId={oriId}
+            destId={destId}
+          />
+          <QuoteHotelList
+            quoteId={item.id}
+            disable={disable}
+            onTotalChange={(t) => handleHotelTotalChange(item.id, t)}
+            oriId={oriId}
+            destId={destId}
+          />
+        </Collapsible>
+
       </View>
     );
   };
+  
 
   return (
-    <View style={styles.container}>
+    <View style={styles.card}>
       <Text style={styles.heading}>{selected ? "Selected Quote" : "Quotes List"}</Text>
       <FlatList
         data={dataQuote}
@@ -151,14 +196,42 @@ const { requestId } = useLocalSearchParams();
 export default QuoteList;
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
-  heading: { fontSize: 22, fontWeight: "bold", marginBottom: 10, color: "#fff" },
-  card: { backgroundColor: "#fff", padding: 16, marginBottom: 12, borderRadius: 8, elevation: 2 },
-  row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8 },
-  agency: { fontWeight: "bold" },
-  cost: { color: "#333" },
+  container: { padding: 8,  },
+  heading: { fontSize: 24, color: "#000", marginBottom: 16 },
+  card: { backgroundColor: "#fff", padding: 16, marginBottom: 16, marginTop: 20, borderRadius: 8, elevation: 2 },
+  row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8},
+  agency: { fontWeight: "bold", fontSize: 18 },
+  cost: { color: "#333", fontWeight: "bold", fontSize: 18 },
   selectBtn: { backgroundColor: "#007bff", padding: 10, borderRadius: 6, marginVertical: 6 },
-  deleteBtn: { backgroundColor: "#dc3545", padding: 10, borderRadius: 6, marginVertical: 6 },
+  deleteBtn: { borderColor: '#dc3545', margin: 5 , borderWidth: 1, borderRadius: 6, padding: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },  
   btnText: { color: "#fff", textAlign: "center" },
-  empty: { textAlign: "center", marginTop: 30, color: "#999" }
+  empty: { textAlign: "center", marginTop: 30, color: "#555" },
+  accordionHeader: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 16,
+    backgroundColor: '#f9f9f9',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  arrowIcon: {
+    marginLeft: 8,
+  },
+  headerContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+  },
+  
+  rightSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  
+  
 });

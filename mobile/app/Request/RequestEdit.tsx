@@ -12,6 +12,8 @@ import { url } from '@/components/Host';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
 import Toast from 'react-native-toast-message';
+import { Dropdown } from 'react-native-element-dropdown';
+import BackgroundWrapper from '@/components/BackgroundWrapper';
 
 const baseUrl = url;
 
@@ -210,19 +212,68 @@ const RequestEdit = () => {
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize for comparison
+  
+    const dateformat = /^\d{4}-\d{2}-\d{2}$/;
+  
+    const isValidDate = (dateStr: string): boolean => {
+      if (!dateformat.test(dateStr)) return false;
+      const date = new Date(`${dateStr}T00:00:00`);
+      return !isNaN(date.getTime());
+    };
+  
+    const isFutureDate = (dateStr: string): boolean => {
+      const date = new Date(`${dateStr}T00:00:00`);
+      return date > today;
+    };
+  
     if (!code.trim()) newErrors.code = "Code is required.";
     if (!projectId) newErrors.projectId = "Project is required.";
     if (!originCityId) newErrors.originCityId = "Origin City is required.";
     if (!destinationCityId) newErrors.destinationCityId = "Destination City is required.";
-    if (!travelDate) newErrors.travelDate = "Travel Date is required.";
-    if (isRoundTrip && !returnDate) newErrors.returnDate = "Return Date is required.";
-    if (isHotelNeeded) {
-      if (!checkInDate) newErrors.checkInDate = "Check-In Date is required.";
-      if (!checkOutDate) newErrors.checkOutDate = "Check-Out Date is required.";
+  
+    if (!travelDate) {
+      newErrors.travelDate = "Travel Date is required.";
+    } else if (!isValidDate(travelDate)) {
+      newErrors.travelDate = "Use format YYYY-MM-DD.";
+    } else if (!isFutureDate(travelDate)) {
+      newErrors.travelDate = "Travel Date must be in the future.";
     }
+  
+    if (isRoundTrip) {
+      if (!returnDate) {
+        newErrors.returnDate = "Return Date is required.";
+      } else if (!isValidDate(returnDate)) {
+        newErrors.returnDate = "Use format YYYY-MM-DD.";
+      } else if (!isFutureDate(returnDate)) {
+        newErrors.returnDate = "Return Date must be in the future.";
+      }
+    }
+  
+    if (isHotelNeeded) {
+      if (!checkInDate) {
+        newErrors.checkInDate = "Check-In Date is required.";
+      } else if (!isValidDate(checkInDate)) {
+        newErrors.checkInDate = "Use format YYYY-MM-DD.";
+      } else if (!isFutureDate(checkInDate)) {
+        newErrors.checkInDate = "Check-In Date must be in the future.";
+      }
+  
+      if (!checkOutDate) {
+        newErrors.checkOutDate = "Check-Out Date is required.";
+      } else if (!isValidDate(checkOutDate)) {
+        newErrors.checkOutDate = "Use format YYYY-MM-DD.";
+      } else if (!isFutureDate(checkOutDate)) {
+        newErrors.checkOutDate = "Check-Out Date must be in the future.";
+      }
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
+  
 
   const Submit = () => {
     if (validateForm()) {
@@ -231,12 +282,16 @@ const RequestEdit = () => {
   };
 
   return (
-    <FlatList
+    <BackgroundWrapper>
+      <FlatList
       data={[]}
       renderItem={() => null}
       ListHeaderComponent={
         <>  
-        <View style={styles.container}>    
+        <View style={styles.container}>   
+           <TouchableOpacity style={styles.backButton} onPress={() => router.push('/Request/RequestList')}>
+              <Text style={styles.backButtonText}>← Back</Text>
+            </TouchableOpacity> 
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Code</Text>
           <TextInput
@@ -244,70 +299,111 @@ const RequestEdit = () => {
             value={code}
             editable={isEditMode}
             onChangeText={setCode}
-            placeholder="Enter Code"
           />
           {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
         </View>
   
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Project</Text>
-          <Picker
-            selectedValue={projectId}
-            onValueChange={setProjectId}
-            enabled={isEditMode}
-            style={styles.input}
-          >
-            <Picker.Item label="Choose..." value="" />
-            {Projects.map(project => (
-              <Picker.Item key={project.id} label={project.name} value={project.id} />
-            ))}
-          </Picker>
+          {!isEditMode ? (
+          <TextInput
+            style={[styles.input, { backgroundColor: '#f9f9f9' }]}
+            value={Projects.find(project => project.id === projectId)?.name || ''}
+            editable={false}
+          />
+        ) : (
+         <Dropdown
+            style={[styles.dropdown, errors.code && styles.errorInput]}
+            containerStyle={styles.dropdownContainer}
+            placeholderStyle={styles.placeholder}
+            selectedTextStyle={styles.Text}
+            itemTextStyle={styles.Text}
+            data={Projects.map(project => ({
+              label: project.name,
+              value: project.id,
+            }))}
+            labelField="label"
+            valueField="value"
+            placeholder="Select project"            
+            value={projectId}
+            onChange={item => setProjectId(item.value)}
+          />  
+        )}   
           {errors.projectId && <Text style={styles.errorText}>{errors.projectId}</Text>}
         </View>
-  
-        <View style={styles.inputGroup}>
+
+        { description !== '' && (
+          <View style={styles.inputGroup}>
           <Text style={styles.label}>Description</Text>
           <TextInput
             style={styles.input}
             value={description}
             editable={isEditMode}
             onChangeText={setDescription}
-            placeholder="Enter Description"
             multiline
           />
         </View>
+        )}
+        
   
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Origin City</Text>
-          <Picker
-            selectedValue={originCityId}
-            onValueChange={setOriginCityId}
-            enabled={isEditMode}
-            style={styles.input}
-          >
-            <Picker.Item label="Choose..." value="" />
-            {Cities.map(city => (
-              <Picker.Item key={city.id} label={city.name} value={city.id} />
-            ))}
-          </Picker>
-          {errors.originCityId && <Text style={styles.errorText}>{errors.originCityId}</Text>}
-        </View>
+          {!isEditMode ? (
+          <TextInput
+            style={[styles.input, { backgroundColor: '#f9f9f9' }]}
+            value={Cities.find(city => city.id === destinationCityId)?.name || ''}
+            editable={false}
+          />
+        ) : (
+          <Dropdown
+            style={[styles.dropdown, errors.code && styles.errorInput]}
+            containerStyle={styles.dropdownContainer}
+            placeholderStyle={styles.placeholder}
+            selectedTextStyle={styles.Text}
+            itemTextStyle={styles.Text}
+            data={Cities.map(city => ({
+              label: city.name,
+              value: city.id,
+            }))}
+            labelField="label"
+            valueField="value"
+            placeholder="Select Origin City"
+            value={originCityId}
+            onChange={item => setOriginCityId(item.value)}
+          />
+        )}
+          {errors.originCityId && <Text style={styles.errorText}>{errors.originCityId}</Text>}    
+          </View>
   
         <View style={styles.inputGroup}>
-          <Text style={styles.label}>Destination City</Text>
-          <Picker
-            selectedValue={destinationCityId}
-            onValueChange={setDestinationCityId}
-            enabled={isEditMode}
-            style={styles.input}
-          >
-            <Picker.Item label="Choose..." value="" />
-            {Cities.map(city => (
-              <Picker.Item key={city.id} label={city.name} value={city.id} />
-            ))}
-          </Picker>
-          {errors.destinationCityId && <Text style={styles.errorText}>{errors.destinationCityId}</Text>}
-        </View>
+        <Text style={styles.label}>Destination City</Text>
+        {!isEditMode ? (
+          <TextInput
+            style={[styles.input, { backgroundColor: '#f9f9f9' }]} 
+            value={Cities.find(city => city.id === destinationCityId)?.name || ''}
+            editable={false}
+          />
+        ) : (
+          <Dropdown
+            style={[styles.dropdown, errors.destinationCityId && styles.errorInput]}
+            containerStyle={styles.dropdownContainer}
+            placeholderStyle={styles.placeholder}
+            selectedTextStyle={styles.Text}
+            itemTextStyle={styles.Text}
+            data={Cities.map(city => ({
+              label: city.name,
+              value: city.id,
+            }))}
+            labelField="label"
+            valueField="value"
+            placeholder="Select Destination City"
+            value={destinationCityId}
+            onChange={item => setDestinationCityId(item.value)}
+          />
+        )}
+        {errors.destinationCityId && <Text style={styles.errorText}>{errors.destinationCityId}</Text>}
+      </View>
+
   
         <View style={styles.inputGroup}>
           <Text style={styles.label}>Travel Date</Text>
@@ -315,8 +411,7 @@ const RequestEdit = () => {
             style={[styles.input, errors.travelDate && styles.errorInput]}
             value={travelDate}
             editable={isEditMode}
-            onChangeText={setTravelDate}
-            placeholder="YYYY-MM-DD"
+            onChangeText={setTravelDate}    
           />
           {errors.travelDate && <Text style={styles.errorText}>{errors.travelDate}</Text>}
         </View>
@@ -338,7 +433,6 @@ const RequestEdit = () => {
               value={returnDate}
               editable={isEditMode}
               onChangeText={setReturnDate}
-              placeholder="YYYY-MM-DD"
             />
             {errors.returnDate && <Text style={styles.errorText}>{errors.returnDate}</Text>}
           </View>
@@ -362,7 +456,6 @@ const RequestEdit = () => {
                 value={checkInDate}
                 editable={isEditMode}
                 onChangeText={setCheckInDate}
-                placeholder="YYYY-MM-DD"
               />
               {errors.checkInDate && <Text style={styles.errorText}>{errors.checkInDate}</Text>}
             </View>
@@ -373,8 +466,7 @@ const RequestEdit = () => {
                 style={[styles.input, errors.checkOutDate && styles.errorInput]}
                 value={checkOutDate}
                 editable={isEditMode}
-                onChangeText={setCheckOutDate}
-                placeholder="YYYY-MM-DD"
+                onChangeText={setCheckOutDate}             
               />
               {errors.checkOutDate && <Text style={styles.errorText}>{errors.checkOutDate}</Text>}
             </View>
@@ -382,10 +474,14 @@ const RequestEdit = () => {
         )}
         
         {/* Save Draft and Submit buttons */}
-        {requestStatusId === 3 && (
-          <View style={styles.buttonRow}>
-            <Button title="Save Draft" color="skyblue" onPress={sendUpdate1} />
-            <Button title="Submit" color="green" onPress={Submit} />
+        {requestStatusId === 3 && (        
+          <View>
+            <TouchableOpacity style={styles.ButtonDraft} onPress={sendUpdate1}>
+              <Text style={styles.ButtonText}> Save Draft</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.ButtonSubmit} onPress={Submit}>
+              <Text style={styles.ButtonText}> Submit</Text>
+            </TouchableOpacity>
           </View>
         )}
   
@@ -397,7 +493,9 @@ const RequestEdit = () => {
             <QuoteList refreshTrigger={refreshTrigger} oriId={originCityId} destId={destinationCityId} select={false} selected={false} disable={false} refreshstatus={function (): void {
               throw new Error('Function not implemented.');
             } } />
-            <Button title="Finish Quoting" onPress={() => sendUpdateRequest(2)} />
+            <TouchableOpacity style={styles.ButtonQuoting} onPress={() => sendUpdateRequest(2)}>
+              <Text style={styles.ButtonText}>Finish Quoting</Text>
+            </TouchableOpacity>
           </>
         )}
   
@@ -416,31 +514,86 @@ const RequestEdit = () => {
         )}
   
         {requestStatusId === 1 && justification !== "" && (
-          <View style={{ marginTop: 20 }}>
-            <Text style={styles.justificationTitle}>Justification:</Text>
+          <View style={styles.Card}>
+            <Text style={styles.justificationTitle}>Justification</Text>
             <Text style={styles.justificationText}>{justification}</Text>
           </View>
         )}
-      </View></>
+      </View>  
+      </>
       }
     />  
+      </BackgroundWrapper>
   );
 };
 
 export default RequestEdit;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#111' },
+  container: { flexGrow: 1, padding: 16, paddingBottom: 80},
   title: { fontSize: 24, fontWeight: 'bold', color: '#fff', marginBottom: 20 },
   inputGroup: { marginBottom: 15 },
-  label: { color: '#fff', marginBottom: 5 },
-  input: { backgroundColor: '#000', padding: 10, borderRadius: 5 },
+  label: { color: '#000', marginBottom: 5, fontWeight: 'bold', fontSize: 16 },
+  input: { backgroundColor: '#fff',  color: '#000', padding: 10, borderRadius: 5, fontSize: 16 },
   errorInput: { borderColor: 'red', borderWidth: 1 },
   errorText: { color: 'red', fontSize: 12 },
-  backButton: { marginBottom: 10 },
-  backButtonText: { color: '#00f', fontSize: 18 },
+  backButton: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginBottom: 15,
+    alignSelf: 'flex-start',
+    backgroundColor: '#2F70E2',
+    borderRadius: 6,
+  },
+  backButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
   buttonRow: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 },
-  justificationTitle: { color: '#fff', fontWeight: 'bold', fontSize: 18 },
-  justificationText: { color: '#ccc', marginTop: 5 },
+  justificationTitle: { color: '#000', fontSize: 24 },
+  justificationText: { color: '#000', marginTop: 5 },
+  Card: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   switchGroup: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20},
+  dropdown: { height: 40, borderRadius: 5, paddingHorizontal: 10, backgroundColor: '#fff' },
+  dropdownContainer: { borderRadius: 8, backgroundColor: '#fff', },
+  placeholder: { color: '#999', fontSize: 14, },
+  Text: { color: '#000', fontSize: 14, },
+  ButtonDraft: {
+    backgroundColor: '#17a2b8',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  ButtonSubmit: {
+    backgroundColor: '#28a745',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  ButtonQuoting: {
+    backgroundColor: '#2F70E2',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12,
+  },
+  ButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },  
+
 });

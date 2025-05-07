@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
 import axios from "axios";
 import { format } from "date-fns";
 import authHeader from "../../utils/auth.header";
@@ -7,6 +7,7 @@ import FlightAdd from "./FlightAdd";
 import FlightEdit from "./FlightEdit";
 import { url } from "@/components/Host";
 import Toast from "react-native-toast-message";
+import { MaterialIcons } from '@expo/vector-icons';
 
 const baseUrl = url;
 
@@ -53,14 +54,23 @@ const FlightList: React.FC<FlightListProps> = ({ quoteId, disable, onTotalChange
     }
   };
 
-  const OnDelete = (id: number) => {
-    Toast.show({
-      type: "info",
-      text1: "Deleting...",
-      text2: "Please wait while we delete the flight",
-    });
-    SendDelete(id);
-  };
+  const OnDelete = async (id: number) => {
+        if (Platform.OS === 'web') {
+          const confirm = window.confirm("Are you sure you want to delete this Flight?");
+          if (confirm) {
+            await SendDelete(id);
+          }
+        } else {
+          Alert.alert(
+            'Are you sure?',
+            'You will not be able to recover this Flight!',
+            [
+              { text: 'Cancel', style: 'cancel' },
+              { text: 'Delete', style: 'destructive', onPress: () => SendDelete(id) },
+            ]
+          );
+        }
+      };
 
   const SendDelete = async (id: number) => {
     try {
@@ -93,17 +103,19 @@ const FlightList: React.FC<FlightListProps> = ({ quoteId, disable, onTotalChange
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.card}>
       <Text style={styles.flightNumber}>Flight: {item.flightNumber}</Text>
-      <Text>Departure: {item.DepartureAirport.name} - {format(new Date(item.departureDateTime), "dd/MM/yyyy HH:mm")}</Text>
-      <Text>Arrival: {item.ArrivalAirport.name} - {format(new Date(item.arrivalDateTime), "dd/MM/yyyy HH:mm")}</Text>
-      <Text>Price: {item.price} €</Text>
+      <Text style={styles.text}>Departure: {item.DepartureAirport.name}</Text>
+      <Text style={styles.text}>{format(new Date(item.departureDateTime), "dd/MM/yyyy HH:mm")}</Text>
+      <Text style={styles.text}>Arrival: {item.ArrivalAirport.name}</Text>
+      <Text style={styles.text}>{format(new Date(item.arrivalDateTime), "dd/MM/yyyy HH:mm")}</Text>
+      <Text style={styles.text}>Price: {item.price} €</Text>
 
       {!disable && (
         <View style={styles.actions}>
           <TouchableOpacity style={styles.btnInfo} onPress={() => setEditingFlightId(item.id)}>
-            <Text style={styles.btnText}>Edit</Text>
+            <MaterialIcons name="edit" size={24} color="#2F70E2" />
           </TouchableOpacity>
-          <TouchableOpacity style={styles.btnDanger} onPress={() => OnDelete(item.id)}>
-            <Text style={styles.btnText}>Delete</Text>
+          <TouchableOpacity style={styles.btnDelete} onPress={() => OnDelete(item.id)}>
+            <MaterialIcons name="delete" size={26} color="#dc3545" />
           </TouchableOpacity>
         </View>
       )}
@@ -113,10 +125,10 @@ const FlightList: React.FC<FlightListProps> = ({ quoteId, disable, onTotalChange
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.heading}>Flights List</Text>
+        <Text style={styles.title}>Flights List</Text>
         {!disable && (
           <TouchableOpacity style={styles.addButton} onPress={() => setShowAdd(true)}>
-            <Text style={styles.btnText}>+ Add Flight</Text>
+            <MaterialIcons name="add" size={26} color="#28a745" />
           </TouchableOpacity>
         )}
       </View>
@@ -156,15 +168,16 @@ const FlightList: React.FC<FlightListProps> = ({ quoteId, disable, onTotalChange
 export default FlightList;
 
 const styles = StyleSheet.create({
-  container: { padding: 16 },
+  container: { padding: 8 },
+  title: { fontSize: 18, fontWeight: 'bold' },
+  text: { fontSize: 16, paddingVertical: 1 },
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 12 },
-  heading: { fontSize: 20, fontWeight: "bold" },
-  addButton: { backgroundColor: "#007bff", padding: 10, borderRadius: 6 },
+  addButton: { borderColor: '#28a745', borderWidth: 1, backgroundColor: "#fff", padding: 6, borderRadius: 6, alignItems: 'center', },
   btnText: { color: "#fff", fontWeight: "bold" },
-  card: { padding: 16, backgroundColor: "#fff", marginBottom: 10, borderRadius: 8, elevation: 2 },
-  flightNumber: { fontWeight: "bold", marginBottom: 6 },
-  actions: { flexDirection: "row", justifyContent: "space-around", marginTop: 10 },
-  btnInfo: { backgroundColor: "#17a2b8", padding: 8, borderRadius: 6 },
-  btnDanger: { backgroundColor: "#dc3545", padding: 8, borderRadius: 6 },
-  empty: { textAlign: "center", marginTop: 30, color: "#999" }
+  btnInfo: { borderColor: '#2F70E2' , borderWidth: 1, borderRadius: 6, padding: 6, alignItems: 'center', backgroundColor: '#fff' },  
+  btnDelete: { borderColor: '#dc3545', borderWidth: 1, borderRadius: 6, padding: 6, alignItems: 'center', backgroundColor: '#fff' },  
+  card: { paddingVertical: 12, paddingHorizontal: 26, backgroundColor: "#fff", marginBottom: 10, borderRadius: 8, borderColor: '#000', borderWidth: 1, alignSelf: 'center' },
+  flightNumber: { fontSize: 16, fontWeight: "bold", paddingVertical: 1 },
+  actions: { flexDirection: "row", justifyContent: 'space-evenly', marginTop: 15 },
+  empty: { textAlign: "center", marginTop: 30, color: "#555" }
 });

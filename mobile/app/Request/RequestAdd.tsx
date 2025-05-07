@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, Alert, ScrollView, Switch, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import authHeader from '../../utils/auth.header';
 import { useAuth } from '@/utils/auth.context';
@@ -15,6 +13,7 @@ const baseUrl = url ;
 
 const RequestAdd = () => {
     const { authChanged, userId, getUserId } = useAuth();
+
       useEffect(() => {
         const fetchRole = async () => {
           await getUserId();
@@ -46,7 +45,6 @@ const RequestAdd = () => {
   const [checkInDate, setCheckInDate] = useState("");
   const [checkOutDate, setCheckOutDate] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
-
 
   useEffect(() => {
     LoadData()
@@ -126,31 +124,83 @@ const RequestAdd = () => {
 
   const validateForm = () => {
     const newErrors: FormErrors = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Normalize for comparison
+  
+    const dateformat = /^\d{4}-\d{2}-\d{2}$/;
+  
+    const isValidDate = (dateStr: string): boolean => {
+      if (!dateformat.test(dateStr)) return false;
+      const date = new Date(`${dateStr}T00:00:00`);
+      return !isNaN(date.getTime());
+    };
+  
+    const isFutureDate = (dateStr: string): boolean => {
+      const date = new Date(`${dateStr}T00:00:00`);
+      return date > today;
+    };
+  
     if (!code.trim()) newErrors.code = "Code is required.";
     if (!projectId) newErrors.projectId = "Project is required.";
     if (!originCityId) newErrors.originCityId = "Origin City is required.";
     if (!destinationCityId) newErrors.destinationCityId = "Destination City is required.";
-    if (!travelDate) newErrors.travelDate = "Travel Date is required.";
-    if (isRoundTrip && !returnDate) newErrors.returnDate = "Return Date is required.";
-    if (isHotelNeeded) {
-      if (!checkInDate) newErrors.checkInDate = "Check-In Date is required.";
-      if (!checkOutDate) newErrors.checkOutDate = "Check-Out Date is required.";
+  
+    if (!travelDate) {
+      newErrors.travelDate = "Travel Date is required.";
+    } else if (!isValidDate(travelDate)) {
+      newErrors.travelDate = "Use format YYYY-MM-DD.";
+    } else if (!isFutureDate(travelDate)) {
+      newErrors.travelDate = "Travel Date must be in the future.";
     }
+  
+    if (isRoundTrip) {
+      if (!returnDate) {
+        newErrors.returnDate = "Return Date is required.";
+      } else if (!isValidDate(returnDate)) {
+        newErrors.returnDate = "Use format YYYY-MM-DD.";
+      } else if (!isFutureDate(returnDate)) {
+        newErrors.returnDate = "Return Date must be in the future.";
+      }
+    }
+  
+    if (isHotelNeeded) {
+      if (!checkInDate) {
+        newErrors.checkInDate = "Check-In Date is required.";
+      } else if (!isValidDate(checkInDate)) {
+        newErrors.checkInDate = "Use format YYYY-MM-DD.";
+      } else if (!isFutureDate(checkInDate)) {
+        newErrors.checkInDate = "Check-In Date must be in the future.";
+      }
+  
+      if (!checkOutDate) {
+        newErrors.checkOutDate = "Check-Out Date is required.";
+      } else if (!isValidDate(checkOutDate)) {
+        newErrors.checkOutDate = "Use format YYYY-MM-DD.";
+      } else if (!isFutureDate(checkOutDate)) {
+        newErrors.checkOutDate = "Check-Out Date must be in the future.";
+      }
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+  
+  
 
 
 return (    
     <BackgroundWrapper>
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80 }}>
+    <TouchableOpacity style={styles.backButton} onPress={() => router.push('/Request/RequestList')}>
+      <Text style={styles.backButtonText}>← Back</Text>
+    </TouchableOpacity>
     <View style={styles.inputGroup}>
       <Text style={styles.label}>Code</Text>
       <TextInput style={[styles.input, errors.code && styles.errorInput]} 
         value={code} 
         onChangeText={setCode} 
         placeholder='Code...' 
-        placeholderTextColor='#000'
+        placeholderTextColor='#888'
       />
       {errors.code && <Text style={styles.errorText}>{errors.code}</Text>}
     </View>
@@ -184,7 +234,7 @@ return (
         value={description}
         onChangeText={setDescription}
         placeholder='Description...'
-        placeholderTextColor='#000'
+        placeholderTextColor='#888'
       />
     </View>
 
@@ -239,7 +289,7 @@ return (
       <Text style={styles.label}>Travel Date</Text>
       <TextInput
         placeholder="YYYY-MM-DD"
-        placeholderTextColor='#000'
+        placeholderTextColor='#888'
         style={[styles.input, errors.travelDate && styles.errorInput]}
         value={travelDate}
         onChangeText={setTravelDate}
@@ -252,7 +302,7 @@ return (
         <Text style={styles.label}>Return Date</Text>
         <TextInput
           placeholder="YYYY-MM-DD"
-          placeholderTextColor='#000'
+          placeholderTextColor='#888'
           style={[styles.input, errors.returnDate && styles.errorInput]}
           value={returnDate}
           onChangeText={setReturnDate}
@@ -272,7 +322,7 @@ return (
           <Text style={styles.label}>Check-In Date</Text>
           <TextInput
             placeholder="YYYY-MM-DD"
-            placeholderTextColor='#000'
+            placeholderTextColor='#888'
             style={[styles.input, errors.checkInDate && styles.errorInput]}
             value={checkInDate}
             onChangeText={setCheckInDate}
@@ -284,7 +334,7 @@ return (
           <Text style={styles.label}>Check-Out Date</Text>
           <TextInput
             placeholder="YYYY-MM-DD"
-            placeholderTextColor='#000'
+            placeholderTextColor='#888'
             style={[styles.input, errors.checkOutDate && styles.errorInput]}
             value={checkOutDate}
             onChangeText={setCheckOutDate}
@@ -296,14 +346,14 @@ return (
 
     <View>
         <TouchableOpacity style={styles.ButtonDraft} onPress={() => handleSubmit(3)}>
-          <Text style={styles.ButtonText}> Save Draft</Text>
+          <Text style={styles.ButtonText}>Save Draft</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.ButtonSubmit} onPress={() => handleSubmit(4)}>
-          <Text style={styles.ButtonText}> Submit</Text>
+          <Text style={styles.ButtonText}>Submit</Text>
         </TouchableOpacity>
 
     </View>
-  </View>
+  </ScrollView>
   </BackgroundWrapper>
   );
 };
@@ -313,13 +363,24 @@ const styles = StyleSheet.create({
     container: { flex: 1, padding: 16 },
     title: { fontSize: 24, fontWeight: 'bold', color: '#fff', marginBottom: 20 },
     inputGroup: { marginBottom: 15 },
-    label: { color: '#000', marginBottom: 5, fontWeight: 'bold' },
-    input: { backgroundColor: '#fff', color: '#000', padding: 10, borderRadius: 5 },    
+    label: { color: '#000', marginBottom: 5, fontWeight: 'bold', fontSize: 16 },
+    input: { backgroundColor: '#fff', color: '#000', padding: 10, borderRadius: 5, fontSize: 16 },    
     errorInput: { borderColor: 'red', borderWidth: 1 },
     errorText: { color: 'red', fontSize: 12 },
     switchGroup: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-    backButton: { marginBottom: 10 },
-    backButtonText: { color: '#00f', fontSize: 18 },
+    backButton: {
+      paddingVertical: 8,
+      paddingHorizontal: 12,
+      marginBottom: 15,
+      alignSelf: 'flex-start',
+      backgroundColor: '#2F70E2',
+      borderRadius: 6,
+    },
+    backButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
     pickerItem: { color: '#000' },
     dropdown: { height: 40, borderRadius: 5, paddingHorizontal: 10, backgroundColor: '#fff' },
     dropdownContainer: { borderRadius: 8, backgroundColor: '#fff', },

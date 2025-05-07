@@ -22,3 +22,12 @@
           <Picker.Item key={project.id} label={project.name} value={project.id} />
         ))}
       </Picker>
+
+
+
+<DateTimePicker
+              value={new Date(form.arrivalDateTime)}
+              mode="datetime"
+              display="default"
+              onChange={(event, date) => date && setForm({ ...form, arrivalDateTime: date })}
+            />

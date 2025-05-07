@@ -38,13 +38,13 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
     function renderRequestItem({ item }: { item: any }) {
         return (
             <View style={styles.row}>
-                <Text>{item.code}</Text>
-                <Text>{item.user.name}</Text>
-                <Text>{item.project.name}</Text>
-                <Text>{format(new Date(item.travelDate), "dd/MM/yyyy")}</Text>
-                <Text>{item.returnDate ? format(new Date(item.returnDate), "dd/MM/yyyy") : null}</Text>
-                <Text>{item.Cost} €</Text>
-                <Text>{item.project.budget - item.project.totalCost} €</Text>
+                <Text style={styles.itemText}>{item.code}</Text>
+                <Text style={styles.itemText}>{item.user.name}</Text>
+                <Text style={styles.itemText}>{item.project.name}</Text>
+                <Text style={styles.itemText}>{format(new Date(item.travelDate), "dd/MM/yyyy")}</Text>
+                <Text style={styles.itemText}>{item.returnDate ? format(new Date(item.returnDate), "dd/MM/yyyy") : null}</Text>
+                <Text style={styles.itemText}>{item.Cost} €</Text>
+                <Text style={styles.itemText}>{item.project.budget - item.project.totalCost} €</Text>
 
                 <TouchableOpacity
                     style={styles.buttonReject}
@@ -127,7 +127,7 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
                 data={dataRequest}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={renderRequestItem}
-                ListEmptyComponent={<Text>No Requests Found</Text>}
+                ListEmptyComponent={<Text style={styles.empty} >No Requests Found</Text>}
                 nestedScrollEnabled={true}
             />
         </View>
@@ -167,6 +167,16 @@ const styles = StyleSheet.create({
         textAlign: "center",
         fontWeight: "bold",
     },
+    empty: {
+        textAlign: "center",
+        marginTop: 20,
+        fontSize: 16,
+        color: "#555",
+      },
+      itemText: {
+        fontSize: 16,
+        marginBottom: 4,
+      },
 });
 
 export default RequestManager;

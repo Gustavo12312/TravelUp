@@ -4,6 +4,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../utils/auth.context';
 import BackgroundWrapper from '@/components/BackgroundWrapper';
+import { Image } from 'react-native';
 
 
 type FormData = {
@@ -43,6 +44,15 @@ export default function LoginComponent() {
 
   return (
     <BackgroundWrapper>
+      <View style={{ alignItems: 'center', marginTop: 40 }}>
+        <Image
+          source={require('../assets/images/airplane.png')} // replace with your actual path
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <Text style={styles.titleapp}>TravelUp</Text>
+      </View>
+
         <View style={styles.overlay}>
         <Text style={styles.title}>Login</Text>
 
@@ -53,7 +63,7 @@ export default function LoginComponent() {
           rules={{ required: 'Please Fill Email!' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              style={styles.input}
+            style={[styles.input, errors.email && styles.errorInput]}
               placeholder="Enter your email..."
               placeholderTextColor={'#666'}
               onBlur={onBlur}
@@ -72,7 +82,7 @@ export default function LoginComponent() {
           rules={{ required: 'Please Fill Password!' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              style={styles.input}
+              style={[styles.input, errors.password && styles.errorInput]}
               placeholder="Enter your password..."
               placeholderTextColor={'#666'}
               secureTextEntry
@@ -113,7 +123,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   loginButton: {
-    backgroundColor: '#6190E6',
+    backgroundColor: '#2F70E2',
     padding: 12,
     borderRadius: 10,
     alignItems: 'center',
@@ -130,6 +140,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     color: '#fff',
+  },
+  titleapp: {
+    fontSize: 54, // Bigger font size for logo feel
+    fontWeight: '900',
+    textAlign: 'center',
+    color: '#fff',
+    marginBottom: 30,
+    letterSpacing: 2, // Adds spacing between letters
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 4,
+  },
+  logo: {
+    width: 100, // or whatever fits your design
+    height: 100,
   },
   label: {
     marginBottom: 6,
@@ -153,5 +178,9 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
     fontSize: 14,
+  },
+  errorInput: {
+    borderColor: 'red',
+    borderWidth: 1,
   },
 });

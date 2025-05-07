@@ -20,6 +20,17 @@ interface FlightEditProps {
     destId: number;
   }
 
+  interface Flight {
+    flightNumber: string,
+    departureAirportId: number,
+    arrivalAirportId: number,
+    departureDateTime: string,
+    arrivalDateTime: string,
+    price: number,
+    isReturnTrip: boolean,
+    hasStops: boolean,
+  }
+
   type Airport = {
     id: number;
     name: string;
@@ -34,28 +45,9 @@ const FlightEdit: React.FC<FlightEditProps> = ({ show, handleClose, flightId, on
   const [departureDate, setDepartureDate] = useState(new Date());
   const [arrivalDate, setArrivalDate] = useState(new Date());
 
-  const {
-    control,
-    handleSubmit,
-    setValue,
-    watch,
-    reset,
-    formState: { errors }
-  } = useForm<Flight>();
-
+  const { control, setValue,  watch, handleSubmit, reset, formState: { errors } } = useForm<Flight>();
   const isReturnTrip = watch("isReturnTrip");
   const hasStops = watch("hasStops");
-
-  type Flight = {
-    flightNumber: string;
-    departureAirportId: string;
-    arrivalAirportId: string;
-    departureDateTime: string;
-    arrivalDateTime: string;
-    price: number;
-    isReturnTrip: boolean;
-    hasStops: boolean;
-  };
 
   useEffect(() => {
     loadFlight();

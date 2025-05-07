@@ -8,6 +8,7 @@ import { useAuth } from '../utils/auth.context';
 import { Dropdown } from 'react-native-element-dropdown'; 
 import { url } from '@/components/Host';
 import BackgroundWrapper from '@/components/BackgroundWrapper';
+import { Image } from 'react-native';
 
 const baseUrl = url;
 
@@ -89,6 +90,14 @@ export default function RegisterComponent() {
   return (
 
     <BackgroundWrapper>
+       <View style={{ alignItems: 'center', marginTop: 40 }}>
+              <Image
+                source={require('../assets/images/airplane.png')} // replace with your actual path
+                style={styles.logo}
+                resizeMode="contain"
+              />
+              <Text style={styles.titleapp}>TravelUp</Text>
+            </View>
     <View style={styles.overlay}>
       <Text style={styles.title}>Register</Text>
 
@@ -198,6 +207,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#fff',
   },
+  titleapp: {
+    fontSize: 54,
+    fontWeight: '900',
+    textAlign: 'center',
+    color: '#fff',
+    marginBottom: 30,
+    letterSpacing: 2,
+    textShadowColor: 'rgba(0, 0, 0, 0.4)',
+    textShadowOffset: { width: 1, height: 2 },
+    textShadowRadius: 4,
+  },
+  logo: {
+    width: 100, // or whatever fits your design
+    height: 100,
+  },
   label: {
     marginBottom: 6,
     fontWeight: '500',
@@ -212,7 +236,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   loginButton: {
-    backgroundColor: '#6190E6',
+    backgroundColor: '#2F70E2',
     padding: 12,
     borderRadius: 10,
     alignItems: 'center',

@@ -163,7 +163,7 @@ const RequestList = () => {
       <Text style={styles.cell}>{item.requeststatus.label}</Text>
       <View style={[styles.cell, styles.actionsCell]}>
         <TouchableOpacity onPress={() =>  router.push({ pathname: '/Request/RequestEdit', params: { requestId: item.id },})}>
-          <MaterialIcons name="edit" size={24} color="#007bff" />
+          <MaterialIcons name="edit" size={24} color="#2F70E2" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => OnDelete(item.id)}>
           <MaterialIcons name="delete" size={28} color="#dc3545" />
@@ -247,24 +247,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
-  link: {
-    color: '#6190E6',
-    marginLeft: 10,
-    fontWeight: 'bold'
-  },
-  linkdelete: {
-    color: 'red',
-    marginLeft: 10,
-    fontWeight: 'bold'
-  },
   emptyText: {
     textAlign: 'center',
-    color: '#aaa',
+    color: '#555',
     marginTop: 20,
     fontSize: 16,
   },
   Button: {
-    backgroundColor: '#6190E6',
+    backgroundColor: '#2F70E2',
     padding: 8,
     borderRadius: 10,
     alignItems: 'center',

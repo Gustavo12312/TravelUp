@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, Modal, Alert, ScrollView } from "react-native";
-import { Picker } from "@react-native-picker/picker";
-import DateTimePicker from "@react-native-community/datetimepicker";
+import { View, Text, TextInput, Button, Modal, Alert, ScrollView, TouchableOpacity, StyleSheet, Switch } from "react-native";
 import axios from "axios";
 import { url } from "@/components/Host";
+import authHeader from "../../utils/auth.header";
+import { useForm, Controller } from "react-hook-form";
 import Toast from "react-native-toast-message";
+import { Dropdown } from 'react-native-element-dropdown';
 
 const baseUrl = url;
 
@@ -17,30 +18,33 @@ interface FlightAddProps {
     destId: number;
   }
 
-const FlightAdd: React.FC<FlightAddProps> = ({ show, handleClose, quoteId, onRefresh, oriId, destId }) => {
-  const [form, setForm] = useState({
-    flightNumber: "",
-    departureAirportId: "",
-    arrivalAirportId: "",
-    departureDateTime: new Date(),
-    arrivalDateTime: new Date(),
-    price: "",
-    isReturnTrip: false,
-    hasStops: false,
-  });
+  interface Flight {
+    flightNumber: string,
+    departureAirportId: number,
+    arrivalAirportId: number,
+    departureDateTime: string,
+    arrivalDateTime: string,
+    price: number,
+    isReturnTrip: boolean,
+    hasStops: boolean,
+  }
 
   type Airport = {
-    id: string;
+    id: number;
     name: string;
     cityId: number;
   };
+
+const FlightAdd: React.FC<FlightAddProps> = ({ show, handleClose, quoteId, onRefresh, oriId, destId }) => {
+  const { control, watch, handleSubmit, reset, formState: { errors } } = useForm<Flight>();
+  const isReturnTrip = watch("isReturnTrip");
+  const hasStops = watch("hasStops");
 
   const [allAirports, setAllAirports] = useState<Airport[]>([]);
   const [oriAirports, setOriAirports] = useState<Airport[]>([]);
   const [destAirports, setDestAirports] = useState<Airport[]>([]);
 
   useEffect(() => {
-    // Fetch airport data
     const loadAirports = async () => {
       try {
         const [ori, dest, all] = await Promise.all([
@@ -58,11 +62,22 @@ const FlightAdd: React.FC<FlightAddProps> = ({ show, handleClose, quoteId, onRef
     if (show) loadAirports();
   }, [show]);
 
-  const handleSubmit = async () => {
+  const onSubmit = async (data: Flight) => {
+    const payload = {
+      quoteId,
+      flightNumber: data. flightNumber,
+      departureAirportId: data.departureAirportId,
+      arrivalAirportId: data.arrivalAirportId,
+      departureDateTime: data.departureDateTime,
+      arrivalDateTime: data.arrivalDateTime,
+      price: data.price,
+      isReturnTrip: data.isReturnTrip,
+      hasStops: data.hasStops,
+    };
     try {
-      const response = await axios.post(`${baseUrl}/flight/create`, {
-        quoteId,
-        ...form,
+      const response = await axios.post(`${baseUrl}/flight/create`, payload, {
+        headers: await authHeader(),
+        
       });
       if (response.data.success) {
               Toast.show({
@@ -90,70 +105,230 @@ const FlightAdd: React.FC<FlightAddProps> = ({ show, handleClose, quoteId, onRef
 
   return (
     <Modal visible={show} transparent animationType="slide">
-      <View style={{ flex: 1, backgroundColor: "#000000aa", justifyContent: "center" }}>
-        <View style={{ backgroundColor: "#fff", margin: 20, padding: 20, borderRadius: 10 }}>
-          <ScrollView>
-            <Text>Flight Number</Text>
-            <TextInput
-              value={form.flightNumber}
-              onChangeText={(text) => setForm({ ...form, flightNumber: text })}
-              placeholder="Enter flight number"
-              style={{ borderWidth: 1, marginBottom: 10 }}
-            />
+      <View style={styles.modalOverlay}>
+        <View style={styles.card}>
+          <Text style={styles.title}>Add Flight</Text>  
 
-            <Text>Price (€)</Text>
-            <TextInput
-              keyboardType="numeric"
-              value={form.price}
-              onChangeText={(text) => setForm({ ...form, price: text })}
-              style={{ borderWidth: 1, marginBottom: 10 }}
-            />
+          <View style={styles.inputGroup}>
+            <Controller
+                control={control}
+                name="isReturnTrip"
+                render={({ field: { onChange, value } }) => (
+                <View style={styles.switchRow}>
+                  <Text>Return Trip</Text>
+                  <Switch value={value} onValueChange={onChange} />
+                </View>
+                )}
+              />
+              
+              <Controller
+                control={control}
+                name="hasStops"
+                render={({ field: { onChange, value } }) => (
+                  <View style={styles.switchRow}>
+                    <Text>Has Stops</Text>
+                    <Switch value={value} onValueChange={onChange} />
+                  </View>
+                  )}
+              />
+            </View>  
+            
+            <View style={styles.inputGroup}>                
+              <Text style={styles.label}>Flight Number</Text>
+              <Controller
+                control={control}
+                name="flightNumber"
+                rules={{ required: "Flight Number is required." }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput                   
+                    style={[styles.input, errors.flightNumber && styles.errorInput]}
+                    placeholder="Flight Number..."
+                    placeholderTextColor='#888' 
+                    value={value || ''}
+                    onChangeText={onChange}
+                  />
+                )}
+              /> 
+              {errors.flightNumber && <Text style={styles.error}>{errors.flightNumber.message}</Text>}                                 
+            </View>
 
-            <Text>Departure Airport</Text>
-            <Picker
-              selectedValue={form.departureAirportId}
-              onValueChange={(itemValue) => setForm({ ...form, departureAirportId: itemValue })}
-            >
-              <Picker.Item label="Choose..." value="" />
-              {(form.hasStops ? allAirports : form.isReturnTrip ? destAirports : oriAirports).map((a) => (
-                <Picker.Item key={a.id} label={a.name} value={a.id} />
-              ))}
-            </Picker>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Price (€)</Text>
+              <Controller
+                control={control}
+                name="price"
+                rules={{ required: "Price is required." }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput                   
+                    style={[styles.input, errors.price && styles.errorInput]}
+                    placeholder="Price..."
+                    placeholderTextColor='#888' 
+                    value={value?.toString() || ""}
+                    onChangeText={onChange}
+                  />
+                )}
+              />  
+               {errors.price && <Text style={styles.error}>{errors.price.message}</Text>}                                                    
+            </View>                        
 
-            <Text>Arrival Airport</Text>
-            <Picker
-              selectedValue={form.arrivalAirportId}
-              onValueChange={(itemValue) => setForm({ ...form, arrivalAirportId: itemValue })}
-            >
-              <Picker.Item label="Choose..." value="" />
-              {(form.hasStops ? allAirports : form.isReturnTrip ? oriAirports : destAirports).map((a) => (
-                <Picker.Item key={a.id} label={a.name} value={a.id} />
-              ))}
-            </Picker>
+            <View style={styles.inputGroup}>
+              <Text style={styles.label}>Departure Airport</Text>
+              <Controller
+                control={control}
+                name="departureAirportId"
+                rules={{ required: "Departure Airport is required." }}
+                render={({ field: { onChange, value } }) => (
+                  <Dropdown
+                    style={[styles.dropdown, errors.departureAirportId && styles.errorInput]}
+                    containerStyle={styles.dropdownContainer}
+                    placeholderStyle={styles.placeholder}
+                    selectedTextStyle={styles.Text}
+                    itemTextStyle={styles.Text}
+                    data={( hasStops ? allAirports : isReturnTrip ? destAirports : oriAirports).map(a => ({
+                      label: a.name,
+                      value: a.id,
+                    }))}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Select Departure Airport"
+                    value={value || undefined}
+                    onChange={item => onChange(item.value)}
+                  />   
+                )}
+              />  
+              {errors.departureAirportId && <Text style={styles.error}>{errors.departureAirportId.message}</Text>}                                        
+                                               
+            </View>
 
-            <Text>Departure DateTime</Text>
-            <DateTimePicker
-              value={new Date(form.departureDateTime)}
-              mode="datetime"
-              display="default"
-              onChange={(event, date) => date && setForm({ ...form, departureDateTime: date })}
-            />
+            <View style={styles.inputGroup}>
+            <Text style={styles.label}>Arrival Airport</Text>
+            <Controller
+                control={control}
+                name="arrivalAirportId"
+                rules={{ required: "Arrival Airport is required." }}
+                render={({ field: { onChange, value } }) => (
+                  <Dropdown
+                    style={[styles.dropdown, errors.arrivalAirportId && styles.errorInput]}
+                    containerStyle={styles.dropdownContainer}
+                    placeholderStyle={styles.placeholder}
+                    selectedTextStyle={styles.Text}
+                    itemTextStyle={styles.Text}
+                    data={( hasStops ? allAirports : isReturnTrip ? oriAirports : destAirports).map(a => ({
+                      label: a.name,
+                      value: a.id,
+                    }))}
+                    labelField="label"
+                    valueField="value"
+                    placeholder="Select Arrival Airport"
+                    value={value || undefined}
+                    onChange={item => onChange(item.value)}
+                  /> 
+                )}
+              /> 
+               {errors.arrivalAirportId && <Text style={styles.error}>{errors.arrivalAirportId.message}</Text>}                                                             
+            </View>
 
-            <Text>Arrival DateTime</Text>
-            <DateTimePicker
-              value={new Date(form.arrivalDateTime)}
-              mode="datetime"
-              display="default"
-              onChange={(event, date) => date && setForm({ ...form, arrivalDateTime: date })}
-            />
+            <View style={styles.inputGroup}>
+            <Text style={styles.label}>Departure Date Time</Text> 
+            <Controller
+                control={control}
+                name="departureDateTime"
+                rules={{
+                  required: "Departure Date is required.",
+                  pattern: {
+                    value: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/,
+                    message: "Use format YYYY-MM-DD HH:mm",
+                  },
+                  validate: value => {
+                    const inputDate = new Date(value.replace(' ', 'T'));
+                    if (isNaN(inputDate.getTime())) {
+                      return "Invalid date format.";
+                    }
+                    const now = new Date();
+                    if (inputDate <= now) {
+                      return "Departure must be in the future.";
+                    }
+                    return true;
+                  }
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput                    
+                    style={[styles.input, errors.departureDateTime && styles.errorInput]}
+                    placeholder="YYYY-MM-DD HH:mm"
+                    placeholderTextColor='#888' 
+                    value={value || ''}
+                    onChangeText={onChange}
+                  />
+                )}
+              />
+              {errors.departureDateTime && <Text style={styles.error}>{errors.departureDateTime.message}</Text>}                                        
+            </View>
 
-            <Button title="Add Flight" onPress={handleSubmit} />
-            <Button title="Cancel" color="gray" onPress={handleClose} />
-          </ScrollView>
+            <View style={styles.inputGroup}>
+            <Text style={styles.label}>Arrival Date Time</Text>
+            <Controller
+                control={control}
+                name="arrivalDateTime"
+                rules={{
+                  required: "Arrival Date is required.",
+                  pattern: {
+                    value: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/,
+                    message: "Use format YYYY-MM-DD HH:mm",
+                  },
+                  validate: value => {
+                    const inputDate = new Date(value.replace(' ', 'T'));
+                    if (isNaN(inputDate.getTime())) {
+                      return "Invalid date format.";
+                    }
+                    const now = new Date();
+                    if (inputDate <= now) {
+                      return "Arrival must be in the future.";
+                    }
+                    return true;
+                  }
+                }}
+                render={({ field: { onChange, value } }) => (
+                  <TextInput
+                  style={[styles.input, errors.arrivalDateTime && styles.errorInput]}
+                    placeholder="YYYY-MM-DD HH:mm"
+                    placeholderTextColor='#888' 
+                    value={value || ''}
+                    onChangeText={onChange}
+                  />
+                )}
+              />
+              {errors.arrivalDateTime && <Text style={styles.error}>{errors.arrivalDateTime.message}</Text>}             
+            </View>
+        
+            <TouchableOpacity style={styles.Addbtn} onPress={handleSubmit(onSubmit)}>
+              <Text style={styles.ButtonText}>Add Flight</Text>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.Cancelbtn} onPress={handleClose}>
+              <Text style={styles.ButtonText}>Cancel</Text>
+            </TouchableOpacity>  
         </View>
       </View>
     </Modal>
   );
 };
+const styles = StyleSheet.create({
+  card:{ backgroundColor: '#fff', margin: 40, padding: 20, borderRadius: 8 },
+  input: { backgroundColor: '#fff', color: '#000', padding: 10, borderRadius: 5, fontSize: 16, borderWidth: 1, borderColor: '#000' },  
+  label: { color: '#000', marginBottom: 5, fontWeight: 'bold', fontSize: 16 },  
+  inputGroup: { marginBottom: 15 },
+  dropdown: { height: 40, borderRadius: 5, paddingHorizontal: 10, backgroundColor: '#fff',  borderWidth: 1, borderColor: '#000'  },
+  dropdownContainer: { borderRadius: 8, backgroundColor: '#fff', },
+  placeholder: { color: '#999', fontSize: 14, },
+  Text: { color: '#000', fontSize: 14, },
+  Addbtn: { backgroundColor: '#2F70E2', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, },
+  Cancelbtn: { backgroundColor: 'grey', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, },
+  ButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold', },  
+  error: { color: "red", fontSize: 12, },
+  errorInput: { borderColor: 'red', borderWidth: 1 },
+  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", },
+  title: { fontSize: 24, color: '#000', marginBottom: 20 },
+  switchRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 10 },
+});
+
 
 export default FlightAdd;

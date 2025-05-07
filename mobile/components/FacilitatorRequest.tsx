@@ -88,13 +88,13 @@ export default function RequestFacilitator({ status, refreshTrigger, onRefresh }
       }
     >
       <Text style={styles.code}>Code: {item.code}</Text>
-      <Text>Requested By: {item.user.name}</Text>
-      <Text>Project: {item.project.name}</Text>
-      <Text>Travel: {format(new Date(item.travelDate), "dd/MM/yyyy")}</Text>
+      <Text style={styles.itemText}>Requested By: {item.user.name}</Text>
+      <Text style={styles.itemText}>Project: {item.project.name}</Text>
+      <Text style={styles.itemText}>Travel: {format(new Date(item.travelDate), "dd/MM/yyyy")}</Text>
       {item.returnDate && (
-        <Text>Return: {format(new Date(item.returnDate), "dd/MM/yyyy")}</Text>
+        <Text style={styles.itemText}>Return: {format(new Date(item.returnDate), "dd/MM/yyyy")}</Text>
       )}
-      <Text>Status: {item.requeststatus.label}</Text>
+      <Text style={styles.itemText}>Status: {item.requeststatus.label}</Text>
 
       {status === 0 && (
         <TouchableOpacity
@@ -164,6 +164,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 20,
     fontSize: 16,
-    color: "#999",
+    color: "#555",
+  },
+  itemText: {
+    fontSize: 16,
+    marginBottom: 4,
   },
 });

@@ -55,7 +55,7 @@ export default function CustomDrawerContent(props: any) {
           onPress={() => router.push({ pathname: '/Detail/DetailEdit', params: { userId: String(userId) } })}
           style={{ marginBottom: 15 }}
         >
-          <Text style={{ color: '#6190E6' }}>View Profile</Text>
+          <Text style={{ color: '#2F70E2' }}>View Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.logoutButton} onPress={logOut}>

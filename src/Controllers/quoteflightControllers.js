@@ -76,7 +76,7 @@ controller.create = async (req, res) => {
             price,
             isReturnTrip,
             hasStops
-        } = req.body;
+        } = req.body;     
 
         const newQuoteFlight = await QuoteFlight.create({
             quoteId,
