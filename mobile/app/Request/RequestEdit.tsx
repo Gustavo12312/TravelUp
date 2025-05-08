@@ -150,7 +150,8 @@ const RequestEdit = () => {
           text1: 'Success',
           text2: res.data.message
         });
-        goBack();
+        triggerHomeRefresh();
+        goBack();      
       } else {
         Toast.show({
           type: 'error',
@@ -180,7 +181,7 @@ const RequestEdit = () => {
           text2: res.data.message
         });  
         triggerHomeRefresh();    
-        goBack;
+        goBack();
       } else {
         Toast.show({
           type: 'error',
@@ -484,7 +485,7 @@ const RequestEdit = () => {
         
         {/* Save Draft and Submit buttons */}
         {requestStatusId === 3 && (        
-          <View>
+          <View style= { styles.buttonRow }>
             <TouchableOpacity style={styles.ButtonDraft} onPress={sendUpdate1}>
               <Text style={styles.ButtonText}> Save Draft</Text>
             </TouchableOpacity>
@@ -507,19 +508,30 @@ const RequestEdit = () => {
             </TouchableOpacity>
           </>
         )}
-  
-        {requestStatusId === 6 && role === 3 && (
-          <>
-            <Button title="Reject" color="red" onPress={() => setShowAdd(true)} />
-            {showAdd && <JustificationAdd requestId={requestIdNumber} show={showAdd} handleClose={() => setShowAdd(false)} onRefresh={fetchData} />}
-            <Button title="Approve" color="green" onPress={() => sendUpdateRequest(5)} />
-          </>
-        )}
+
+        {requestStatusId === 2 && (
+          <QuoteList refreshTrigger={refreshTrigger} select={true} selected={false} disable={true} refreshstatus={() => sendUpdateRequest(6)} oriId={0} destId={0} />
+        )}           
   
         {(requestStatusId === 1 || requestStatusId === 5 || requestStatusId === 6) && (
           <QuoteList refreshTrigger={refreshTrigger} select={false} selected={true} disable={true} refreshstatus={function (): void {
             throw new Error('Function not implemented.');
           } } oriId={0} destId={0} />
+        )}
+
+        {requestStatusId === 6 && role === 3 && (
+          <>
+          <View style= {styles.buttonRow}>
+                  
+            <TouchableOpacity style={styles.ButtonDecline} onPress={() => setShowAdd(true)}>
+              <Text style={styles.ButtonText}>Reject</Text>
+            </TouchableOpacity>
+            {showAdd && <JustificationAdd requestId={requestIdNumber} show={showAdd} handleClose={() => setShowAdd(false)} onRefresh={fetchData} />}                      
+            <TouchableOpacity style={styles.ButtonApprove} onPress={() => sendUpdateRequest(5)}>
+              <Text style={styles.ButtonText}>Approve</Text>
+            </TouchableOpacity>   
+            </View>
+          </>
         )}
   
         {requestStatusId === 1 && justification !== "" && (
@@ -559,7 +571,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-  buttonRow: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-evenly' },
   justificationTitle: { color: '#000', fontSize: 24 },
   justificationText: { color: '#000', marginTop: 5 },
   Card: {
@@ -584,13 +596,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 12,
+    width: 120  
   },
   ButtonSubmit: {
     backgroundColor: '#28a745',
     padding: 8,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 12,
+    marginTop: 12, 
+    width: 120  
   },
   ButtonQuoting: {
     backgroundColor: '#2F70E2',
@@ -598,6 +612,22 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     marginTop: 12,
+  },
+  ButtonDecline: {
+    backgroundColor: '#dc3545',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12,
+    width: 100
+  },
+  ButtonApprove: {
+    backgroundColor: '#28a745',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 12,
+    width: 100
   },
   ButtonText: {
     color: '#fff',

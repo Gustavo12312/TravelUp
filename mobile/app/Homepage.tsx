@@ -34,13 +34,14 @@ const Homepage = () => {
   }
 
   return (  
+    <BackgroundWrapper>
 
      <FlatList
       data={[]}
       renderItem={() => null}
       ListHeaderComponent={
         <>
-    <BackgroundWrapper>
+    
   
     <ScrollView contentContainerStyle={styles.container}> 
       {role === 2 && (
@@ -81,10 +82,11 @@ const Homepage = () => {
         <RequestTraveller status={1} refreshTrigger={refreshTrigger}/>
       </View>
     </ScrollView>
-    </BackgroundWrapper>
+   
     </>
     }
   />
+   </BackgroundWrapper>
   );
   
 };

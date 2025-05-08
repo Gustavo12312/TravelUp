@@ -360,7 +360,7 @@ return (
       </>
     )}
 
-    <View>
+    <View style= { styles.buttonRow }>
         <TouchableOpacity style={styles.ButtonDraft} onPress={() => handleSubmit(3)}>
           <Text style={styles.ButtonText}>Save Draft</Text>
         </TouchableOpacity>
@@ -408,13 +408,16 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       alignItems: 'center',
       marginTop: 12,
+      width: 120
     },
+    buttonRow: { flexDirection: 'row', justifyContent: 'space-evenly' },
     ButtonSubmit: {
       backgroundColor: '#28a745',
       padding: 8,
       borderRadius: 10,
       alignItems: 'center',
       marginTop: 12,
+      width: 120
     },
     ButtonText: {
       color: '#fff',

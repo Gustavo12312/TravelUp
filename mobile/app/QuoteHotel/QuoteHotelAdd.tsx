@@ -230,12 +230,14 @@ const QuoteHotelAdd: React.FC<QuoteHotelAddProps> = ({ show, handleClose, quoteI
             )}
             </View>           
 
-            <TouchableOpacity style={styles.Addbtn} onPress={handleSubmit(onSubmit)}>
-              <Text style={styles.ButtonText}>Add Hotel</Text>
-            </TouchableOpacity>
+            <View style={styles.buttonRow}>            
             <TouchableOpacity style={styles.Cancelbtn} onPress={handleClose}>
               <Text style={styles.ButtonText}>Cancel</Text>
-            </TouchableOpacity>      
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.Addbtn} onPress={handleSubmit(onSubmit)}>
+              <Text style={styles.ButtonText}>Add</Text>
+            </TouchableOpacity>
+            </View>      
         </View>
       </View>
     </Modal>
@@ -253,8 +255,9 @@ const styles = StyleSheet.create({
   dropdownContainer: { borderRadius: 8, backgroundColor: '#fff', },
   placeholder: { color: '#999', fontSize: 14, },
   Text: { color: '#000', fontSize: 14, },
-  Addbtn: { backgroundColor: '#28a745', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, },
-  Cancelbtn: { backgroundColor: 'grey', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, },
+  Addbtn: { backgroundColor: '#28a745', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, width: 80 },
+  Cancelbtn: { backgroundColor: 'grey', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, width: 80 },
+  buttonRow: { flexDirection: 'row', justifyContent: 'space-evenly' },
   ButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold', },  
   error: { color: "red", fontSize: 12, },
   errorInput: { borderColor: 'red', borderWidth: 1 },

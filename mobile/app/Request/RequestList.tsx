@@ -29,13 +29,13 @@ type RequestData = {
 
   const RequestList = () => {
   const [dataRequest, setDataRequest] = useState<RequestData[]>([]);
-  const { authChanged, triggerHomeRefresh } = useAuth();
+  const { authChanged, triggerHomeRefresh, homeRefreshTrigger} = useAuth();
   const router = useRouter();
   const { refresh } = useLocalSearchParams();
  
   useEffect(() => {
       LoadRequest();    
-    }, [authChanged, refresh]);
+    }, [authChanged, refresh, homeRefreshTrigger]);
 
     
   const LoadRequest = async () => {

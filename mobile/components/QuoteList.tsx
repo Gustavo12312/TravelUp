@@ -201,9 +201,9 @@ const styles = StyleSheet.create({
   row: { flexDirection: "row", justifyContent: "space-between", marginBottom: 8},
   agency: { fontWeight: "bold", fontSize: 18 },
   cost: { color: "#333", fontWeight: "bold", fontSize: 18 },
-  selectBtn: { backgroundColor: "#007bff", padding: 10, borderRadius: 6, marginVertical: 6 },
+  selectBtn: { backgroundColor: "#007bff", padding: 10, borderRadius: 6, marginVertical: 6, alignItems: 'center' },
   deleteBtn: { borderColor: '#dc3545', margin: 5 , borderWidth: 1, borderRadius: 6, padding: 6, alignItems: 'center', justifyContent: 'center', backgroundColor: '#fff' },  
-  btnText: { color: "#fff", textAlign: "center" },
+  btnText: { color: "#fff",  fontSize: 16, fontWeight: 'bold' },
   empty: { textAlign: "center", marginTop: 30, color: "#555" },
   accordionHeader: {
     borderWidth: 1,

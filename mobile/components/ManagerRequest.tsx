@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
 import { format } from "date-fns";
+import { useRouter } from 'expo-router';
 import axios from "axios";
 import authHeader from "../utils/auth.header";
 import JustificationAdd from "./JustificationAdd";
@@ -13,6 +14,7 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
     const [dataRequest, setDataRequest] = useState([]);
     const [showAdd, setShowAdd] = useState(false);
     const [selectedRow, setSelectedRow] = useState(null);
+      const router = useRouter();
 
     useEffect(() => {        
         loadRequest();        
@@ -37,14 +39,32 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
 
     function renderRequestItem({ item }: { item: any }) {
         return (
-            <View style={styles.row}>
-                <Text style={styles.itemText}>{item.code}</Text>
-                <Text style={styles.itemText}>{item.user.name}</Text>
-                <Text style={styles.itemText}>{item.project.name}</Text>
-                <Text style={styles.itemText}>{format(new Date(item.travelDate), "dd/MM/yyyy")}</Text>
-                <Text style={styles.itemText}>{item.returnDate ? format(new Date(item.returnDate), "dd/MM/yyyy") : null}</Text>
-                <Text style={styles.itemText}>{item.Cost} €</Text>
-                <Text style={styles.itemText}>{item.project.budget - item.project.totalCost} €</Text>
+             <TouchableOpacity
+                onPress={() =>
+                    router.push({
+                      pathname: '/Request/RequestEdit',
+                      params: { requestId: item.id },
+                    })
+                  } 
+                  style={styles.itemContainer}
+                >
+          
+                <Text style={styles.itemText}>Code: {item.code}</Text>
+                <Text style={styles.itemText}>Requested By: {item.user.name}</Text>
+                <Text style={styles.itemText}>Project: {item.project.name}</Text>
+                <Text style={styles.itemText}>Travel: {format(new Date(item.travelDate), "dd/MM/yyyy")}</Text>
+                <Text style={styles.itemText}>Return: {item.returnDate ? format(new Date(item.returnDate), "dd/MM/yyyy") : null}</Text>
+                <Text style={styles.itemText}>Cost: {item.Cost} €</Text>
+                <Text style={styles.itemText}>Budget Available: {item.project.budget - item.project.totalCost} €</Text>
+
+                <TouchableOpacity
+                    style={styles.buttonApprove}
+                    onPress={() => {
+                        sendUpdateRequest(item.id, 5);
+                        sendUpdateProject(item.project.id, item.Cost, item.project.totalCost);
+                    }}>
+                    <Text style={styles.buttonText}>Approve</Text>
+                </TouchableOpacity> 
 
                 <TouchableOpacity
                     style={styles.buttonReject}
@@ -64,16 +84,8 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
                         onRefresh={onRefresh}
                     />
                 )}
-
-                <TouchableOpacity
-                    style={styles.buttonApprove}
-                    onPress={() => {
-                        sendUpdateRequest(item.id, 5);
-                        sendUpdateProject(item.project.id, item.Cost, item.project.totalCost);
-                    }}>
-                    <Text style={styles.buttonText}>Approve</Text>
-                </TouchableOpacity>
-            </View>
+           
+            </TouchableOpacity>
         );
     }
 
@@ -136,10 +148,12 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20,
-    },
+        flex: 1,
+        padding: 16,
+        backgroundColor: "#fff",
+      },
     header: {
-        fontSize: 24,
+        fontSize: 22,
         fontWeight: "bold",
         marginBottom: 20,
     },
@@ -151,13 +165,13 @@ const styles = StyleSheet.create({
         borderColor: "#ddd",
     },
     buttonReject: {
-        backgroundColor: "#ff6666",
+        backgroundColor: "#dc3545",
         padding: 10,
         borderRadius: 5,
         marginTop: 10,
     },
     buttonApprove: {
-        backgroundColor: "#66ff66",
+        backgroundColor: "#28a745",
         padding: 10,
         borderRadius: 5,
         marginTop: 10,
@@ -176,6 +190,12 @@ const styles = StyleSheet.create({
       itemText: {
         fontSize: 16,
         marginBottom: 4,
+      },
+      itemContainer: {
+        backgroundColor: "#f4f4f4",
+        padding: 14,
+        borderRadius: 8,
+        marginBottom: 12,
       },
 });
 
