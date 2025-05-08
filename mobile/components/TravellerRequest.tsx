@@ -7,12 +7,13 @@ import authHeader from "../utils/auth.header";
 import { getUserid } from "../utils/auth.utils";
 import { url } from "./Host";
 import { useAuth } from '../utils/auth.context';
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message/lib";
 
 const baseUrl = url;
 
 type Props = {
   status: number;
+  refreshTrigger: any;
 };
 
 type RequestData = {
@@ -25,14 +26,14 @@ type RequestData = {
   requeststatus: { label: string };
 };
 
-export default function RequestTraveller({ status }: Props) {
+export default function RequestTraveller({ status, refreshTrigger }: Props) {
   const [dataRequest, setDataRequest] = useState<RequestData[]>([]);
   const router = useRouter();
   const { authChanged } = useAuth();
 
   useEffect(() => {
       LoadRequest();
-  }, [status, authChanged]);
+  }, [status, authChanged, refreshTrigger]);
 
   const LoadRequest = async () => {
     const headers = await authHeader();

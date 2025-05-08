@@ -3,7 +3,7 @@ import { View, Text, Dimensions, StyleSheet, ScrollView } from "react-native";
 import axios from "axios";
 import { BarChart } from "react-native-chart-kit";
 import { url } from "./Host";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message/lib";
 
 const baseUrl = url;
 

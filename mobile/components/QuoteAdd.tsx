@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Button, StyleSheet, TouchableOpacity } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
-import { Picker } from '@react-native-picker/picker';
+import { Picker } from '@react-native-picker/picker/typings';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import authHeader from '../utils/auth.header';
 import { url } from './Host';
-import Toast from 'react-native-toast-message';
+import Toast from 'react-native-toast-message/lib';
 import { Dropdown } from 'react-native-element-dropdown';
 
 const baseUrl = url;

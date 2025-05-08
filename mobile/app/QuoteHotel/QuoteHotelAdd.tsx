@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Picker } from "@react-native-picker/picker";
 import { View, Text, TextInput, Button, Modal, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
@@ -254,7 +253,7 @@ const styles = StyleSheet.create({
   dropdownContainer: { borderRadius: 8, backgroundColor: '#fff', },
   placeholder: { color: '#999', fontSize: 14, },
   Text: { color: '#000', fontSize: 14, },
-  Addbtn: { backgroundColor: '#2F70E2', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, },
+  Addbtn: { backgroundColor: '#28a745', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, },
   Cancelbtn: { backgroundColor: 'grey', padding: 8, borderRadius: 10, alignItems: 'center', marginTop: 12, },
   ButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold', },  
   error: { color: "red", fontSize: 12, },

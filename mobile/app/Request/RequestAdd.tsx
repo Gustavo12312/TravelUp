@@ -12,7 +12,7 @@ import { Dropdown } from 'react-native-element-dropdown';
 const baseUrl = url ;
 
 const RequestAdd = () => {
-    const { authChanged, userId, getUserId } = useAuth();
+    const { authChanged, userId, getUserId, triggerHomeRefresh } = useAuth();
 
       useEffect(() => {
         const fetchRole = async () => {
@@ -63,6 +63,7 @@ const RequestAdd = () => {
 
   }
 
+
   const handleSubmit = async (statusId: number) => {
     if (validateForm()) {
       const payload = {
@@ -92,7 +93,9 @@ const RequestAdd = () => {
             text1: 'Success',
             text2: response.data.message || 'Request submitted successfully',
           });
-          router.push("/Request/RequestList");
+          resetForm();      
+          router.push({ pathname: '/Request/RequestList', params: { refresh: Date.now().toString() },})
+          triggerHomeRefresh();
         } else {
           Toast.show({
             type: 'error',
@@ -184,14 +187,27 @@ const RequestAdd = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  const resetForm = () => {
+    setCode("");
+    setProjectId("");
+    setDescription("");
+    setOriginCityId("");
+    setDestinationCityId("");
+    setIsRoundTrip(false);
+    setTravelDate("");
+    setReturnDate("");
+    setIsHotelNeeded(false);
+    setCheckInDate("");
+    setCheckOutDate("");
+    setErrors({});
+  };
   
   
-
-
 return (    
     <BackgroundWrapper>
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80 }}>
-    <TouchableOpacity style={styles.backButton} onPress={() => router.push('/Request/RequestList')}>
+    <TouchableOpacity style={styles.backButton} onPress={() =>  router.push("/Request/RequestList")}>
       <Text style={styles.backButtonText}>← Back</Text>
     </TouchableOpacity>
     <View style={styles.inputGroup}>

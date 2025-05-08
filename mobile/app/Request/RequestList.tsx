@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, Button, Alert, TouchableOpacity, Platform } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter,  useLocalSearchParams } from 'expo-router';
 import axios from 'axios';
 import { format } from 'date-fns';
 import * as FileSystem from 'expo-file-system';
@@ -17,7 +17,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 const baseUrl = url;
 
-
 type RequestData = {
     id: number;
     code: string;
@@ -28,14 +27,16 @@ type RequestData = {
     requeststatus: { label: string };
   };
 
-const RequestList = () => {
+  const RequestList = () => {
   const [dataRequest, setDataRequest] = useState<RequestData[]>([]);
-  const { authChanged } = useAuth();
+  const { authChanged, triggerHomeRefresh } = useAuth();
   const router = useRouter();
+  const { refresh } = useLocalSearchParams();
  
   useEffect(() => {
-      LoadRequest();
-    }, [authChanged]);
+      LoadRequest();    
+    }, [authChanged, refresh]);
+
     
   const LoadRequest = async () => {
     const Role = await getUserRole();
@@ -78,6 +79,7 @@ const RequestList = () => {
     }
   };
 
+
   const SendDelete = async (id:number) => {
     const url = `${baseUrl}/request/delete/${id}`;
     const headers = await authHeader();
@@ -86,7 +88,8 @@ const RequestList = () => {
       .then(response => {
         if (response.data.success) {
           Toast.show({type: "error", text1: "Deleted", text2: "Request has been deleted."});
-          LoadRequest();
+          LoadRequest();   
+          triggerHomeRefresh();          
         }
       })
       .catch(() => Toast.show({type: "error", text1: "Error", text2: "Error deleting request"}) );
@@ -162,7 +165,7 @@ const RequestList = () => {
       <Text style={styles.cell}>{format(new Date(item.travelDate), 'dd/MM/yyyy')}</Text>     
       <Text style={styles.cell}>{item.requeststatus.label}</Text>
       <View style={[styles.cell, styles.actionsCell]}>
-        <TouchableOpacity onPress={() =>  router.push({ pathname: '/Request/RequestEdit', params: { requestId: item.id },})}>
+        <TouchableOpacity onPress={() =>  router.push({ pathname: '/Request/RequestEdit', params: { requestId: item.id, page: 'RequestList' },})}>
           <MaterialIcons name="edit" size={24} color="#2F70E2" />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => OnDelete(item.id)}>

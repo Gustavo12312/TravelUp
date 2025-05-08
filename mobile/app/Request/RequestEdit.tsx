@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch, FlatList } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
 import axios from 'axios';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import authHeader from '../../utils/auth.header';
@@ -52,10 +51,10 @@ const RequestEdit = () => {
   const [showComments, setShowComments] = useState(false);
 
 
-  const { requestId } = useLocalSearchParams();
+  const { requestId, page } = useLocalSearchParams();
   const requestIdNumber = Number(requestId);
   const router = useRouter();
-  const { role, getRole } = useAuth();
+  const { role, getRole, triggerHomeRefresh } = useAuth();
 
   useFocusEffect(
     useCallback(() => {
@@ -151,7 +150,7 @@ const RequestEdit = () => {
           text1: 'Success',
           text2: res.data.message
         });
-        router.back();
+        goBack();
       } else {
         Toast.show({
           type: 'error',
@@ -179,8 +178,9 @@ const RequestEdit = () => {
           type: 'success',
           text1: 'Success',
           text2: res.data.message
-        });
-        router.back();
+        });  
+        triggerHomeRefresh();    
+        goBack;
       } else {
         Toast.show({
           type: 'error',
@@ -281,6 +281,15 @@ const RequestEdit = () => {
     }
   };
 
+
+    const goBack = () => {     
+      if (page === 'RequestList') {               
+        router.push('/Request/RequestList');
+      } else {
+        router.push('/Homepage');
+      }
+    };   
+
   return (
     <BackgroundWrapper>
       <FlatList
@@ -289,7 +298,7 @@ const RequestEdit = () => {
       ListHeaderComponent={
         <>  
         <View style={styles.container}>   
-           <TouchableOpacity style={styles.backButton} onPress={() => router.push('/Request/RequestList')}>
+          <TouchableOpacity style={styles.backButton} onPress={() => goBack()}>      
               <Text style={styles.backButtonText}>← Back</Text>
             </TouchableOpacity> 
         <View style={styles.inputGroup}>
@@ -351,7 +360,7 @@ const RequestEdit = () => {
           {!isEditMode ? (
           <TextInput
             style={[styles.input, { backgroundColor: '#f9f9f9' }]}
-            value={Cities.find(city => city.id === destinationCityId)?.name || ''}
+            value={Cities.find(city => city.id === originCityId)?.name || ''}
             editable={false}
           />
         ) : (

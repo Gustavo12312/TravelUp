@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AuthService from '../utils/auth.service';
 import { getUserRole, getUserid } from './auth.utils';
-import Toast from 'react-native-toast-message';
 
 type AuthContextType = {
   login: (email: string, password: string) => Promise<any>;
@@ -11,6 +10,9 @@ type AuthContextType = {
   authChanged: number;
   role: number;
   userId: number;
+  homeRefreshTrigger: number;
+  triggerHomeRefresh: () => void;
+
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -23,6 +25,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [authChanged, setAuthChanged] = useState(0);
   const [role, setrole] = useState(0);
   const [userId, setuserid] = useState(0);
+  const [homeRefreshTrigger, setHomeRefreshTrigger] = useState(0); // NEW
 
   const login = async (email: string, password: string) => {
     const res = await AuthService.login(email, password);
@@ -47,8 +50,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return res;
   };
 
+  const triggerHomeRefresh = () => {
+    setHomeRefreshTrigger((v) => v + 1);
+  };
+
   return (
-    <AuthContext.Provider value={{ login, register, authChanged, getRole, role, getUserId, userId }}>
+    <AuthContext.Provider value={{ login, register, authChanged, getRole, role, getUserId, userId, homeRefreshTrigger, triggerHomeRefresh }}>
       {children}
     </AuthContext.Provider>
   );

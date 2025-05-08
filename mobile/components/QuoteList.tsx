@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity, Alert, StyleSheet, Platform } from "react-native";
 import axios from "axios";
-import { useRoute } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import authHeader from "../utils/auth.header";
 import FlightList from "../app/QuoteFlight/FlightList";
 import QuoteHotelList from "../app/QuoteHotel/QuoteHotelList";
 import { url } from "./Host";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message/lib";
 import { MaterialIcons } from '@expo/vector-icons';
 import Collapsible from 'react-native-collapsible';
 

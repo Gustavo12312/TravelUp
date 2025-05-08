@@ -6,7 +6,7 @@ import { useRouter } from 'expo-router';
 import authHeader from "../utils/auth.header";
 import { useAuthentication } from "../utils/auth.utils";
 import { url } from "./Host";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message/lib";
 
 const baseUrl = url;
 

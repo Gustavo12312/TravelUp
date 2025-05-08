@@ -6,14 +6,21 @@ import RequestManager from '../components/ManagerRequest';
 import ManagerChart from '../components/ManagerChart';
 import { useAuth } from '../utils/auth.context';
 import BackgroundWrapper from '@/components/BackgroundWrapper';
+import { useLocalSearchParams } from 'expo-router';
+
 
 const Homepage = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const { authChanged, role, getRole } = useAuth();
+  const { authChanged, role, getRole, homeRefreshTrigger } = useAuth();
+  const { refresh } = useLocalSearchParams();
 
   useEffect(() => {
     getRole();
   }, [authChanged]);
+
+  useEffect(() => {
+    handleRefresh();
+  }, [refresh, homeRefreshTrigger]);
 
   const handleRefresh = () => setRefreshTrigger(prev => prev + 1);
 
@@ -26,7 +33,7 @@ const Homepage = () => {
     );
   }
 
-  return (
+  return (  
 
      <FlatList
       data={[]}
@@ -34,8 +41,8 @@ const Homepage = () => {
       ListHeaderComponent={
         <>
     <BackgroundWrapper>
-    
-    <ScrollView contentContainerStyle={styles.container}>
+  
+    <ScrollView contentContainerStyle={styles.container}> 
       {role === 2 && (
         <>
           <Text style={styles.sectionTitle}>🎓 Facilitator Dashboard</Text>
@@ -67,11 +74,11 @@ const Homepage = () => {
       <Text style={styles.sectionTitle}>✈️ Your Travel Requests</Text>
       <View style={styles.card}>
         <Text style={styles.cardHeaderInfo}>Open Requests</Text>
-        <RequestTraveller status={0} />
+        <RequestTraveller status={0}  refreshTrigger={refreshTrigger} />
       </View>
       <View style={styles.card}>
         <Text style={styles.cardHeaderSecondary}>Upcoming Trips</Text>
-        <RequestTraveller status={1} />
+        <RequestTraveller status={1} refreshTrigger={refreshTrigger}/>
       </View>
     </ScrollView>
     </BackgroundWrapper>

@@ -1,7 +1,7 @@
 import { Drawer } from 'expo-router/drawer';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'expo-router';
+import { useRouter, Stack } from 'expo-router';
 import CustomDrawerContent from '../components/CustomDrawer';
 import { isAuth } from '../utils/auth.utils';
 import { AuthProvider, useAuth } from '../utils/auth.context'; 
@@ -109,7 +109,7 @@ export default function RootLayout() {
           />
           
         </Drawer>
-        <Toast />
+        <Toast />     
       <StatusBar style="light" />
       </AuthProvider>
     </>

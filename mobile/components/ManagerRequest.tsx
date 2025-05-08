@@ -5,7 +5,7 @@ import axios from "axios";
 import authHeader from "../utils/auth.header";
 import JustificationAdd from "./JustificationAdd";
 import { url } from "./Host";
-import Toast from "react-native-toast-message";
+import Toast from "react-native-toast-message/lib";
 
 const baseUrl = url;
 
