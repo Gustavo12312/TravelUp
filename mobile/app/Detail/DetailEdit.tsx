@@ -8,6 +8,7 @@ import { getUserid } from '../../utils/auth.utils';
 import authHeader from '../../utils/auth.header';
 import { url } from '@/components/Host';
 import Toast from 'react-native-toast-message';
+import BackgroundWrapper from '@/components/BackgroundWrapper';
 
 const baseUrl = url;
 
@@ -119,90 +120,11 @@ export default function DetailEdit() {
   };
 
   return (
-    <ScrollView style={styles.container}>
-
-      <Controller
-        control={control}
-        name="fullname"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Full Name"
-            value={value ?? ''}
-            onChangeText={onChange}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="birthdate"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Birthdate (YYYY-MM-DD)"
-            value={value ?? ''}
-            onChangeText={onChange}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="phone"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Phone"
-            value={value ?? ''}
-            onChangeText={onChange}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="passportnumber"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Passport Number"
-            value={value ?? ''}
-            onChangeText={onChange}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="emergencycontact"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Emergency Contact"
-            value={value ?? ''}
-            onChangeText={onChange}
-          />
-        )}
-      />
-
-      <Controller
-        control={control}
-        name="milescard"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            style={styles.input}
-            placeholder="Milescard"
-            value={value ?? ''}
-            onChangeText={onChange}
-          />
-        )}
-      />
-
-      <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
-        <Text style={styles.uploadButtonText}>Pick a Photo</Text>
-      </TouchableOpacity>
-
+    <BackgroundWrapper>
+    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80 }} >
+      
+       <View style={styles.inputGroup}>
+       <Text style={styles.photo}>Photo</Text>
       {currentPhoto ? (
         <Image
           source={{ uri: `${baseUrl}${currentPhoto}` }}
@@ -211,17 +133,129 @@ export default function DetailEdit() {
       ) : (
         <Text style={styles.noImageText}>No photo available</Text>
       )}
+      </View>
 
-      <Button title="Save" onPress={handleSubmit(onSubmit)} color="#28a745" />
+      <View style={styles.inputGroup}>
+        <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
+          <Text style={styles.ButtonText}>Pick a Photo</Text>
+        </TouchableOpacity>
+      </View>
+
+       <View style={styles.inputGroup}>
+        <Text style={styles.label}>Full Name</Text>
+        <Controller
+          control={control}
+          name="fullname"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Full Name..."
+              placeholderTextColor='#888' 
+              value={value ?? ''}
+              onChangeText={onChange}
+            />
+          )}
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Birthdate</Text>
+        <Controller
+          control={control}
+          name="birthdate"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="YYYY-MM-DD"
+              placeholderTextColor='#888' 
+              value={value ?? ''}
+              onChangeText={onChange}
+            />
+          )}
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Phone</Text>
+        <Controller
+          control={control}
+          name="phone"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Phone..."
+              placeholderTextColor='#888' 
+              value={value ?? ''}
+              onChangeText={onChange}
+            />
+          )}
+        />
+      </View>
+
+        <View style={styles.inputGroup}>
+          <Text style={styles.label}>Passport Number</Text>
+          <Controller
+            control={control}
+            name="passportnumber"        
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                style={styles.input}
+                placeholder="Passport Number..."
+                placeholderTextColor='#888' 
+                value={value ?? ''}
+                onChangeText={onChange}
+              />
+            )}
+          />
+        </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Emergency Contact</Text>
+        <Controller
+          control={control}
+          name="emergencycontact"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Emergency Contact..."
+              placeholderTextColor='#888' 
+              value={value ?? ''}
+              onChangeText={onChange}
+            />
+          )}
+        />
+      </View>
+
+      <View style={styles.inputGroup}>
+        <Text style={styles.label}>Milescard</Text>
+        <Controller
+          control={control}
+          name="milescard"
+          render={({ field: { onChange, value } }) => (
+            <TextInput
+              style={styles.input}
+              placeholder="Milescard..."
+              placeholderTextColor='#888' 
+              value={value ?? ''}
+              onChangeText={onChange}
+            />
+          )}
+        />
+      </View>     
+
+      <TouchableOpacity style={styles.Button} onPress={handleSubmit(onSubmit)}>
+          <Text style={styles.ButtonText}>Save</Text>
+        </TouchableOpacity>
+
     </ScrollView>
+    </BackgroundWrapper>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: '#121212',
+    padding: 16,   
   },
   title: {
     fontSize: 24,
@@ -230,12 +264,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
   },
-  input: {
-    backgroundColor: '#fff',
-    marginBottom: 12,
-    padding: 12,
-    borderRadius: 8,
-  },
+  input: { backgroundColor: '#fff',  color: '#000', padding: 10, borderRadius: 5, fontSize: 16 },
   backButton: {
     marginBottom: 20,
   },
@@ -244,26 +273,43 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   uploadButton: {
-    backgroundColor: '#007AFF',
-    padding: 12,
-    borderRadius: 8,
-    marginBottom: 20,
+    backgroundColor: '#2F70E2',
+    padding: 8,
+    borderRadius: 10,
     alignItems: 'center',
+    alignSelf: 'center',  
+    marginBottom: 12,
+    width: 150
   },
-  uploadButtonText: {
+  Button: {
+    backgroundColor: '#28a745',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 10,
+    alignSelf: 'center', 
+    width: 80
+  },
+  ButtonText: {
     color: '#fff',
+    fontSize: 16,
     fontWeight: 'bold',
   },
   image: {
-    width: 300,
-    height: 300,
+    width: 150,
+    height: 150,
     alignSelf: 'center',
     marginBottom: 20,
     borderRadius: 8,
+    margin: 10
   },
   noImageText: {
     textAlign: 'center',
-    color: '#aaa',
+    color: '#555',
+    marginTop: 20,
     marginBottom: 20,
   },
+  label: { color: '#000', marginBottom: 5, fontWeight: 'bold', fontSize: 16 },
+  photo: { color: '#000', marginBottom: 5, fontWeight: 'bold', fontSize: 16, alignSelf: 'center' },
+  inputGroup: { marginBottom: 15 },
 });
