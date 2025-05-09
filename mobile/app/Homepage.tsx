@@ -52,7 +52,7 @@ const Homepage = () => {
             <RequestFacilitator status={0} refreshTrigger={refreshTrigger} onRefresh={handleRefresh} />
           </View>
           <View style={styles.card}>
-            <Text style={styles.cardHeaderSuccess}>Approved Trips</Text>
+            <Text style={styles.cardHeaderSuccess}>Waiting For Quotes Requests</Text>
             <RequestFacilitator status={1} refreshTrigger={refreshTrigger} onRefresh={handleRefresh} />
           </View>
         </>
