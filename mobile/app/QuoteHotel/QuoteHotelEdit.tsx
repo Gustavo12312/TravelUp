@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Modal, View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { Modal, View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import Toast from 'react-native-toast-message';
@@ -86,6 +86,10 @@ const QuoteHotelEdit: React.FC<QuoteHotelEditProps> = ({ show, handleClose, quot
 
   return (
     <Modal visible={show} animationType="slide" transparent={true}>
+       <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}         
+        >
       <View style={styles.modalOverlay}>
         <View style={styles.card}>          
             <Text style={styles.title}>Edit Hotel</Text>
@@ -229,6 +233,7 @@ const QuoteHotelEdit: React.FC<QuoteHotelEditProps> = ({ show, handleClose, quot
             </View>   
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };

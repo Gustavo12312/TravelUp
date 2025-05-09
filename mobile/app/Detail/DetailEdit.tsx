@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, Image, StyleSheet, Alert, TouchableOpacity,ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, Image, StyleSheet, Alert, TouchableOpacity,ScrollView, KeyboardAvoidingView, TouchableWithoutFeedback, Platform, Keyboard } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as ImagePicker from 'expo-image-picker';
@@ -9,6 +9,7 @@ import authHeader from '../../utils/auth.header';
 import { url } from '@/components/Host';
 import Toast from 'react-native-toast-message';
 import BackgroundWrapper from '@/components/BackgroundWrapper';
+import { useFocusEffect } from '@react-navigation/native';
 
 const baseUrl = url;
 
@@ -31,6 +32,16 @@ export default function DetailEdit() {
     };
     check();
   }, [userId]);
+
+  useFocusEffect(
+    React.useCallback(() => {     
+      return () => {
+        // Cleanup logic when the user navigates away
+        setPhotoFile(null);  // Reset photoFile on leaving the page
+      };
+    }, [])
+  );
+  
 
   const loadDetail = async () => {
     try {
@@ -79,13 +90,21 @@ export default function DetailEdit() {
       formData.append('milescard', data.milescard || '');
 
       if (photoFile) {
-        formData.append('photo', {
-          uri: photoFile.uri,
-          type: 'image/jpeg',
-          name: 'photo.jpg',
-        } as any);
-      } else if (currentPhoto) {
-        formData.append('photo', currentPhoto);
+        if (Platform.OS === 'web') {
+          const response = await fetch(photoFile.uri);
+          const blob = await response.blob();
+      
+          const fileName = photoFile.fileName || 'photo.jpg';
+          const fileType = blob.type || 'image/jpeg';
+      
+          formData.append('photo', new File([blob], fileName, { type: fileType }));
+        } else {
+          formData.append('photo', {
+            uri: photoFile.uri,
+            type: 'image/jpeg',
+            name: 'photo.jpg',
+          } as any);
+        }
       }
 
       const header = await authHeader();
@@ -97,12 +116,12 @@ export default function DetailEdit() {
       });
 
       if (response.data.success === true) {
+        setCurrentPhoto(response.data.data.photo);
         Toast.show({
           type: 'success',
           text1: 'Success',
           text2: response.data.message,
-        });
-        router.back();
+        });        
       } else {
         Toast.show({
           type: 'error',
@@ -119,21 +138,27 @@ export default function DetailEdit() {
     }
   };
 
-  return (
-    <BackgroundWrapper>
-    <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80 }} >
-      
-       <View style={styles.inputGroup}>
-       <Text style={styles.photo}>Photo</Text>
-      {currentPhoto ? (
-        <Image
-          source={{ uri: `${baseUrl}${currentPhoto}` }}
-          style={styles.image}
-        />
+  return (  
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+    >
+      <BackgroundWrapper>
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 80 }}     
+        >
+    <View style={styles.inputGroup}>
+      <Text style={styles.photo}>Photo</Text>
+      {photoFile ? (
+        <Image source={{ uri: photoFile.uri }} style={styles.image} />
+      ) : currentPhoto ? (
+        <Image source={{ uri: `${baseUrl}${currentPhoto}` }} style={styles.image} />
       ) : (
         <Text style={styles.noImageText}>No photo available</Text>
       )}
-      </View>
+    </View>
 
       <View style={styles.inputGroup}>
         <TouchableOpacity style={styles.uploadButton} onPress={pickImage}>
@@ -249,6 +274,7 @@ export default function DetailEdit() {
 
     </ScrollView>
     </BackgroundWrapper>
+    </KeyboardAvoidingView>
   );
 }
 

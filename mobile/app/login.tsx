@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, Text, TextInput, Button, StyleSheet, ImageBackground, TouchableOpacity} from 'react-native';
+import { View, Text, TextInput, Button, StyleSheet, ImageBackground, TouchableOpacity, KeyboardAvoidingView, Platform} from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../utils/auth.context';
@@ -43,6 +43,11 @@ export default function LoginComponent() {
   };
 
   return (
+     <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+      >
     <BackgroundWrapper>
       <View style={{ alignItems: 'center', marginTop: 40 }}>
         <Image
@@ -107,6 +112,7 @@ export default function LoginComponent() {
         {message ? <Text style={styles.error}>{message}</Text> : null}
       </View>
       </BackgroundWrapper>
+      </KeyboardAvoidingView>
   );
 }
 

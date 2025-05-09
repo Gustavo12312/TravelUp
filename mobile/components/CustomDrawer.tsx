@@ -52,7 +52,7 @@ export default function CustomDrawerContent(props: any) {
         </Text>
 
         <TouchableOpacity
-          onPress={() => router.push({ pathname: '/Detail/DetailEdit', params: { userId: String(userId) } })}
+          onPress={() => router.push({ pathname: '/Detail/DetailEdit', params: { userId: String(userId)} })}
           style={{ marginBottom: 15 }}
         >
           <Text style={{ color: '#2F70E2' }}>View Profile</Text>

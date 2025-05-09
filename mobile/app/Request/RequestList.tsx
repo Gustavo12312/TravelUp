@@ -188,14 +188,17 @@ type RequestData = {
     <BackgroundWrapper>
     <View style={styles.container}>
       <View style={styles.buttonRow}>
-        <TouchableOpacity style={styles.Button} onPress={exportApprovedRequestsPDF}>
-          <Text style={styles.ButtonText}> Export PDF</Text>
+      <View style={styles.buttonRows}>
+        <TouchableOpacity style={styles.Buttonpdf} onPress={exportApprovedRequestsPDF}>        
+          <MaterialIcons name="picture-as-pdf" size={24} color="#fff"  />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.Button} onPress={downloadApprovedRequests}>
-          <Text style={styles.ButtonText}> Export Excel</Text>
+        <TouchableOpacity style={styles.Buttonexcel} onPress={downloadApprovedRequests}>   
+          <MaterialIcons name="grid-on" size={24} color="#fff" />
         </TouchableOpacity>
+        </View>
         <TouchableOpacity style={styles.Button} onPress={() => router.push('/Request/RequestAdd')}>
-          <Text style={styles.ButtonText}> Add Request</Text>
+          <Text style={styles.ButtonText}>Request</Text>
+          <MaterialIcons name="add-circle-outline" size={20} color="#fff" style={{ marginLeft: 5 }} />          
         </TouchableOpacity>
       </View>
       <FlatList
@@ -231,8 +234,12 @@ const styles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
+    justifyContent:  'space-between',
+    marginBottom: 16,  
+  },
+  buttonRows: {
+    flexDirection: 'row',
+    justifyContent:  'space-evenly',   
   },
   row: {
     flexDirection: 'row',
@@ -261,7 +268,25 @@ const styles = StyleSheet.create({
     padding: 8,
     borderRadius: 10,
     alignItems: 'center',
-    marginTop: 12,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    margin: 12,    
+  },
+  Buttonpdf: {
+    backgroundColor: '#dc3545',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    alignSelf: 'center',
+    margin: 8,
+  },
+  Buttonexcel: {
+    backgroundColor: '#28a745',
+    padding: 8,
+    borderRadius: 10,
+    alignItems: 'center',
+    alignSelf: 'center',
+    margin: 8,
   },
   ButtonText: {
     color: '#fff',

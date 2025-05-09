@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, Alert, ScrollView, Switch, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, TextInput, Button, Alert, ScrollView, Switch, StyleSheet, FlatList, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
 import axios from 'axios';
 import authHeader from '../../utils/auth.header';
 import { useAuth } from '@/utils/auth.context';
@@ -204,7 +204,12 @@ const RequestAdd = () => {
   };
   
   
-return (    
+return ( 
+  <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+      >  
     <BackgroundWrapper>
     <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 80 }}>
     <TouchableOpacity style={styles.backButton} onPress={() =>  router.push("/Request/RequestList")}>
@@ -371,6 +376,7 @@ return (
     </View>
   </ScrollView>
   </BackgroundWrapper>
+  </KeyboardAvoidingView> 
   );
 };
 export default RequestAdd;

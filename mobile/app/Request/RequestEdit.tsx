@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch, FlatList } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, StyleSheet, TouchableOpacity, Alert, Switch, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import axios from 'axios';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import authHeader from '../../utils/auth.header';
@@ -292,6 +292,11 @@ const RequestEdit = () => {
     };   
 
   return (
+    <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            keyboardVerticalOffset={Platform.OS === 'ios' ? 80 : 0}
+          >
     <BackgroundWrapper>
       <FlatList
       data={[]}
@@ -545,6 +550,7 @@ const RequestEdit = () => {
       }
     />  
       </BackgroundWrapper>
+      </KeyboardAvoidingView> 
   );
 };
 

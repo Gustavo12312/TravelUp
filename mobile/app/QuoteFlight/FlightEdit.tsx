@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, Alert, Modal, Switch, StyleSheet, Platform, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, Alert, Modal, Switch, StyleSheet, Platform, TouchableOpacity, KeyboardAvoidingView } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import axios from "axios";
 import authHeader from "../../utils/auth.header";
@@ -41,8 +41,6 @@ const FlightEdit: React.FC<FlightEditProps> = ({ show, handleClose, flightId, on
   const [oriAirports, setOriAirports] = useState<Airport[]>([]);
   const [destAirports, setDestAirports] = useState<Airport[]>([]);
   const [formFlight, setFormFlight] = useState<Flight | null>(null);
-  const [departureDate, setDepartureDate] = useState(new Date());
-  const [arrivalDate, setArrivalDate] = useState(new Date());
 
   const { control, setValue,  watch, handleSubmit, reset, formState: { errors } } = useForm<Flight>();
   const isReturnTrip = watch("isReturnTrip");
@@ -137,6 +135,11 @@ const FlightEdit: React.FC<FlightEditProps> = ({ show, handleClose, flightId, on
 
   return (
     <Modal visible={show} transparent animationType="slide">
+       <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 200 : 0}
+        >
       <View style={styles.modalOverlay}>
         <View style={styles.card}>
           <Text style={styles.title}>Edit Flight</Text>  
@@ -341,6 +344,7 @@ const FlightEdit: React.FC<FlightEditProps> = ({ show, handleClose, flightId, on
             </View> 
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -359,7 +363,7 @@ const styles = StyleSheet.create({
   ButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold', },  
   error: { color: "red", fontSize: 12, },
   errorInput: { borderColor: 'red', borderWidth: 1 },
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", },
+  modalOverlay: { flexGrow: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", },
   title: { fontSize: 24, color: '#000', marginBottom: 20 },
   switchRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginVertical: 10 },
 });

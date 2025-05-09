@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, ImageBackground } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert, ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import axios from 'axios';
 import { useRouter } from 'expo-router';
@@ -88,16 +88,21 @@ export default function RegisterComponent() {
   };
 
   return (
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
+    >
 
     <BackgroundWrapper>
        <View style={{ alignItems: 'center', marginTop: 40 }}>
-              <Image
-                source={require('../assets/images/airplane.png')} // replace with your actual path
-                style={styles.logo}
-                resizeMode="contain"
-              />
-              <Text style={styles.titleapp}>TravelUp</Text>
-            </View>
+          <Image
+            source={require('../assets/images/airplane.png')} // replace with your actual path
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.titleapp}>TravelUp</Text>
+        </View>
     <View style={styles.overlay}>
       <Text style={styles.title}>Register</Text>
 
@@ -162,6 +167,7 @@ export default function RegisterComponent() {
         render={({ field: { onChange, value } }) => (
           <Dropdown
             style={styles.input}
+            containerStyle={styles.dropdownContainer}
             data={roles.map(role => ({ label: role.label, value: role.id }))}
             labelField="label"
             valueField="value"
@@ -184,6 +190,7 @@ export default function RegisterComponent() {
       {message ? <Text style={styles.error}>{message}</Text> : null}
     </View>
     </BackgroundWrapper>
+    </KeyboardAvoidingView>
   );
 }
 
@@ -256,4 +263,5 @@ const styles = StyleSheet.create({
     color: 'red',
     marginBottom: 10,
   },
+  dropdownContainer: { borderRadius: 8, backgroundColor: '#fff', },
 });

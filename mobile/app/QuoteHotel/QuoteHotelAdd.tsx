@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, Modal, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, Modal, StyleSheet, ScrollView, TouchableOpacity, KeyboardAvoidingView, Platform } from "react-native";
 import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import authHeader from "../../utils/auth.header";
@@ -97,6 +97,10 @@ const QuoteHotelAdd: React.FC<QuoteHotelAddProps> = ({ show, handleClose, quoteI
 
   return (
     <Modal visible={show} animationType="slide" transparent={true}>
+       <KeyboardAvoidingView
+          style={{ flex: 1 }}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}         
+        >
       <View style={styles.modalOverlay}>
         <View style={styles.card}>          
             <Text style={styles.title}>Add Hotel</Text>
@@ -240,6 +244,7 @@ const QuoteHotelAdd: React.FC<QuoteHotelAddProps> = ({ show, handleClose, quoteI
             </View>      
         </View>
       </View>
+      </KeyboardAvoidingView>
     </Modal>
   );
 };
@@ -261,6 +266,6 @@ const styles = StyleSheet.create({
   ButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold', },  
   error: { color: "red", fontSize: 12, },
   errorInput: { borderColor: 'red', borderWidth: 1 },
-  modalOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", },
+  modalOverlay: { flexGrow: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", },
   title: { fontSize: 24, color: '#000', marginBottom: 20 },
 });

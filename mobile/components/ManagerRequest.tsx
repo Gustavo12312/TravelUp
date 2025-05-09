@@ -57,23 +57,24 @@ const RequestManager = ({ refreshTrigger, onRefresh }: { refreshTrigger: any, on
                 <Text style={styles.itemText}>Cost: {item.Cost} €</Text>
                 <Text style={styles.itemText}>Budget Available: {item.project.budget - item.project.totalCost} €</Text>
 
-                <TouchableOpacity
-                    style={styles.buttonApprove}
-                    onPress={() => {
-                        sendUpdateRequest(item.id, 5);
-                        sendUpdateProject(item.project.id, item.Cost, item.project.totalCost);
-                    }}>
-                    <Text style={styles.buttonText}>Approve</Text>
-                </TouchableOpacity> 
-
-                <TouchableOpacity
-                    style={styles.buttonReject}
-                    onPress={() => {
-                        setShowAdd(true);
-                        setSelectedRow(item.id);
-                    }}>
-                    <Text style={styles.buttonText}>Reject</Text>
-                </TouchableOpacity>
+                <View style= {styles.buttonRow}>               
+                    <TouchableOpacity
+                        style={styles.buttonReject}
+                        onPress={() => {
+                            setShowAdd(true);
+                            setSelectedRow(item.id);
+                        }}>
+                        <Text style={styles.buttonText}>Reject</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.buttonApprove}
+                        onPress={() => {
+                            sendUpdateRequest(item.id, 5);
+                            sendUpdateProject(item.project.id, item.Cost, item.project.totalCost);
+                        }}>
+                        <Text style={styles.buttonText}>Approve</Text>
+                    </TouchableOpacity> 
+                </View>
 
                 
                 {selectedRow !== null && (
@@ -169,12 +170,14 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 5,
         marginTop: 10,
+        width: 100
     },
     buttonApprove: {
         backgroundColor: "#28a745",
         padding: 10,
         borderRadius: 5,
         marginTop: 10,
+        width: 100
     },
     buttonText: {
         color: "white",
@@ -197,6 +200,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginBottom: 12,
       },
+      buttonRow: { flexDirection: 'row', justifyContent: 'space-evenly' },
 });
 
 export default RequestManager;
